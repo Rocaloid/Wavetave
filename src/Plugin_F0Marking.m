@@ -1,4 +1,4 @@
-function F0Marking(Spectrum)
+function Plugin_F0Marking(Spectrum)
 	global FFTSize;
 	global SampleRate;
 	F0 = fix(50 * FFTSize / SampleRate + 1);

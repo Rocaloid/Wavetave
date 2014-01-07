@@ -17,7 +17,7 @@ global DBLowerRange;
 global DBUpperRange;
 
 global Plugin_Spectrum = [
-		"F0Marking"
+		"Plugin_F0Marking"
 	];
 
 FFTSize = 4096;
