@@ -1,15 +1,26 @@
 clear;
+addpath("./");
 
 Version = "0.2";
 
 global FFTSize;
+global SampleRate;
 global Window;
 global ViewPos;
 global ViewWidth;
 global Length;
 global PlotLeft;
 
-FFTSize = 2048;
+global SpectrumLowerRange;
+global SpectrumUpperRange;
+global DBLowerRange;
+global DBUpperRange;
+
+global Plugin_Spectrum = [
+		"F0Marking"
+	];
+
+FFTSize = 4096;
 SpectrumLowerRange = 0;
 SpectrumUpperRange = 5500;
 DBLowerRange = - 70;
@@ -44,14 +55,16 @@ function UpdateView(Wave)
 	text(ViewPos - PlotLeft, Wave(fix(ViewPos)), "x");
 end
 
-function Ret = GenerateSpectrum(Wave)
+function [Ret, RetPhase] = GenerateSpectrum(Wave)
 	global FFTSize;
 	global Window;
-	Ret = abs(fft(Wave .* Window))(1 : FFTSize / 2);
+	X = fft(fftshift(Wave .* Window));
+	Ret = abs(X)(1 : FFTSize / 2);
 	Ret = log10(Ret + 0.000001) * 20;
+	RetPhase = arg(X);
 end
 
-function Ret = UpdateSpectrum(Wave)
+function [Ret, RetPhase] = UpdateSpectrum(Wave)
 	global ViewPos;
 	global ViewWidth;
 	global Length;
@@ -64,11 +77,12 @@ function Ret = UpdateSpectrum(Wave)
 	if(Right > Length)
 		Right = Length;
 	end
-	Ret = GenerateSpectrum(Wave(Left : Right - 1));
+	[Ret, RetPhase] = GenerateSpectrum(Wave(Left : Right - 1));
 end
 
-function UpdatePlotTick(SampleRate, SpectrumLowerRange, SpectrumUpperRange, DBLowerRange)
+function UpdatePlotTick(SpectrumLowerRange, SpectrumUpperRange, DBLowerRange)
 	global FFTSize;
+	global SampleRate;
 	SpectrumWidth = SpectrumUpperRange - SpectrumLowerRange;
 	BinWidth = SpectrumWidth / SampleRate * FFTSize;
 	FixTo10 = fix(BinWidth / 60 + 1) * 5;
@@ -98,12 +112,17 @@ printf("O - Open wave file.\n");
 fflush(stdout);
 
 while(1)
-	Spectrum = UpdateSpectrum(OrigWave);
+	[Spectrum, Phase] = UpdateSpectrum(OrigWave);
 	figure(2);
 	plot(Spectrum);
 	title(cstrcat("Spectrum, FFTSize: ", mat2str(FFTSize)));
 	axis([FFTSize / SampleRate * SpectrumLowerRange, FFTSize / SampleRate * SpectrumUpperRange, DBLowerRange, DBUpperRange]);
-	UpdatePlotTick(SampleRate, SpectrumLowerRange, SpectrumUpperRange, DBLowerRange);
+	UpdatePlotTick(SpectrumLowerRange, SpectrumUpperRange, DBLowerRange);
+
+	for i = 1 : length(Plugin_Spectrum(:, 1))
+		eval(cstrcat(Plugin_Spectrum(i, :), "(Spectrum);"));
+	end
+
 	figure(1);
 	UpdateView(OrigWave);
 	title(cstrcat("Waveform at ", mat2str(ViewPos / SampleRate), " sec."));
@@ -113,9 +132,9 @@ while(1)
 	if(Button == Button_Click)
 		ViewPos = fix(X);
 	elseif(Button == Button_W)
-		ViewWidth *= 0.8;
+		ViewWidth *= 0.5;
 	elseif(Button == Button_S)
-		ViewWidth /= 0.8;
+		ViewWidth /= 0.5;
 	elseif(Button == Button_A)
 		ViewPos -= ViewWidth * 0.2;
 	elseif(Button == Button_D)
@@ -127,7 +146,7 @@ while(1)
 		Length = length(OrigWave);
 		Window = hanning(FFTSize);
 		ViewPos = fix(Length / 2);
-		ViewWidth = ViewPos; 
+		ViewWidth = ViewPos;
 	elseif(Button == Button_Exit)
 		break;
 	end
