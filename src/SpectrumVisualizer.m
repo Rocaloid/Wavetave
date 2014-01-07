@@ -18,9 +18,11 @@ global DBUpperRange;
 
 global Plugin_Spectrum = [
 		"Plugin_F0Marking"
+		"Plugin_HarmonicMarking"
+		"Plugin_PhaseFigure"
 	];
 
-FFTSize = 4096;
+FFTSize = 2048;
 SpectrumLowerRange = 0;
 SpectrumUpperRange = 5500;
 DBLowerRange = - 70;
@@ -64,7 +66,7 @@ function [Ret, RetPhase] = GenerateSpectrum(Wave)
 	RetPhase = arg(X);
 end
 
-function [Ret, RetPhase] = UpdateSpectrum(Wave)
+function [Ret, RetPhase, RetWave] = UpdateSpectrum(Wave)
 	global ViewPos;
 	global ViewWidth;
 	global Length;
@@ -77,7 +79,8 @@ function [Ret, RetPhase] = UpdateSpectrum(Wave)
 	if(Right > Length)
 		Right = Length;
 	end
-	[Ret, RetPhase] = GenerateSpectrum(Wave(Left : Right - 1));
+	RetWave = Wave(Left : Right - 1);
+	[Ret, RetPhase] = GenerateSpectrum(RetWave);
 end
 
 function UpdatePlotTick(SpectrumLowerRange, SpectrumUpperRange, DBLowerRange)
@@ -112,7 +115,7 @@ printf("O - Open wave file.\n");
 fflush(stdout);
 
 while(1)
-	[Spectrum, Phase] = UpdateSpectrum(OrigWave);
+	[Spectrum, Phase, Wave] = UpdateSpectrum(OrigWave);
 	figure(2);
 	plot(Spectrum);
 	title(cstrcat("Spectrum, FFTSize: ", mat2str(FFTSize)));
@@ -120,7 +123,7 @@ while(1)
 	UpdatePlotTick(SpectrumLowerRange, SpectrumUpperRange, DBLowerRange);
 
 	for i = 1 : length(Plugin_Spectrum(:, 1))
-		eval(cstrcat(Plugin_Spectrum(i, :), "(Spectrum);"));
+		eval(cstrcat(Plugin_Spectrum(i, :), "(Spectrum, Phase, Wave);"));
 	end
 
 	figure(1);

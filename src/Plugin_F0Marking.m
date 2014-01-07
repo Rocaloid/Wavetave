@@ -1,6 +1,7 @@
-function Plugin_F0Marking(Spectrum)
+function Plugin_F0Marking(Spectrum, Phase, Wave)
 	global FFTSize;
 	global SampleRate;
+	global Plugin_Var_F0;
 	F0 = fix(50 * FFTSize / SampleRate + 1);
 	UBound = fix(1500 / SampleRate * FFTSize);
 	MaxDiff = 0;
@@ -16,5 +17,7 @@ function Plugin_F0Marking(Spectrum)
 			end
 		end
 	end
+	Plugin_Var_F0 = F0;
 	text(F0, Spectrum(F0), cstrcat("x ", mat2str(fix(F0 * SampleRate / FFTSize)), "Hz"));
 end
+
