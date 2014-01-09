@@ -1,7 +1,7 @@
 clear;
 addpath("./");
 
-Version = "0.2";
+Version = "0.21";
 
 global FFTSize;
 global SampleRate;
@@ -16,10 +16,13 @@ global SpectrumUpperRange;
 global DBLowerRange;
 global DBUpperRange;
 
+global Plugin_Wave = [
+		"Plugin_VOTMarking"
+	];
 global Plugin_Spectrum = [
 		"Plugin_F0Marking"
-		"Plugin_HarmonicMarking"
-		"Plugin_PhaseFigure"
+	#	"Plugin_HarmonicMarking"
+	#	"Plugin_PhaseFigure"
 	];
 
 FFTSize = 2048;
@@ -43,6 +46,7 @@ function UpdateView(Wave)
 	global ViewWidth;
 	global Length;
 	global PlotLeft;
+	global Plugin_Wave;
 	Left = ViewPos - ViewWidth;
 	Right = ViewPos + ViewWidth;
 	if(Left < 1)
@@ -55,6 +59,10 @@ function UpdateView(Wave)
 	plot(Wave(PlotLeft : fix(Right)));
 	axis([0, Right - PlotLeft, - 0.3, 0.3]);
 	text(ViewPos - PlotLeft, Wave(fix(ViewPos)), "x");
+	for i = 1 : length(Plugin_Wave(:, 1))
+		eval(cstrcat(Plugin_Wave(i, :), "(Wave(PlotLeft : fix(Right)));"));
+	end
+	#VOTMarking(Wave(PlotLeft : fix(Right)));
 end
 
 function [Ret, RetPhase] = GenerateSpectrum(Wave)
@@ -117,9 +125,11 @@ fflush(stdout);
 while(1)
 	[Spectrum, Phase, Wave] = UpdateSpectrum(OrigWave);
 	figure(2);
-	plot(Spectrum);
+	LBound = fix(FFTSize / SampleRate * SpectrumLowerRange);
+	UBound = fix(FFTSize / SampleRate * SpectrumUpperRange);
+	plot(Spectrum(1 : UBound));
 	title(cstrcat("Spectrum, FFTSize: ", mat2str(FFTSize)));
-	axis([FFTSize / SampleRate * SpectrumLowerRange, FFTSize / SampleRate * SpectrumUpperRange, DBLowerRange, DBUpperRange]);
+	axis([LBound, UBound, DBLowerRange, DBUpperRange]);
 	UpdatePlotTick(SpectrumLowerRange, SpectrumUpperRange, DBLowerRange);
 
 	for i = 1 : length(Plugin_Spectrum(:, 1))
