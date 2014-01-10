@@ -21,6 +21,7 @@ global Plugin_Wave = [
 	];
 global Plugin_Spectrum = [
 		"Plugin_F0Marking"
+		"Plugin_Freq2Pitch"
 	#	"Plugin_HarmonicMarking"
 	#	"Plugin_PhaseFigure"
 	];

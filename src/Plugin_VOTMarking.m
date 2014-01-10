@@ -43,3 +43,4 @@ function Plugin_VOTMarking(Wave)
 	text(MaxStart * FFTSize, VOTWave(MaxStart * FFTSize + 1), "x VOT");
 	hold off;
 end
+
