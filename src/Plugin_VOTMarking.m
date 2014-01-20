@@ -1,11 +1,16 @@
 function Plugin_VOTMarking(Wave)
 	global Length;
 	global SampleRate;
+	global Environment;
+	global Plugin_Var_VOT;
 	FFTSize = 256;
 	PartLength = length(Wave);
 	VOTWave = zeros(1, PartLength);
-	hold on;
+	MaxEnv = zeros(1, PartLength);
 	LMax = 0;
+	if(strcmp(Environment, "Visual"))
+		hold on;
+	endif
 
 	HoldStart = 0;
 	MaxHold = 0;
@@ -16,8 +21,10 @@ function Plugin_VOTMarking(Wave)
 		c ++;
 		Amp = 20 * log10(abs(fft(Wave(i : i + FFTSize - 1))));
 		Max = max(Amp(fix(300 * FFTSize / SampleRate) : fix(1500 * FFTSize / SampleRate)));
-		for j = 0 : FFTSize - 1
-			VOTWave(i + j) = (LMax * (1 - j / FFTSize) + Max * j / FFTSize) * 0.01;
+		if(strcmp(Environment, "Visual"))
+			for j = 0 : FFTSize - 1
+				VOTWave(i + j) = (LMax * (1 - j / FFTSize) + Max * j / FFTSize) * 0.01;
+			end
 		end
 		LMax = Max;
 		MaxEnv(c) = Max;
@@ -39,8 +46,11 @@ function Plugin_VOTMarking(Wave)
 			end
 		end
 	end
-	plot(VOTWave);
-	text(MaxStart * FFTSize, VOTWave(MaxStart * FFTSize + 1), "x VOT");
-	hold off;
+	Plugin_Var_VOT = MaxStart * FFTSize;
+	if(strcmp(Environment, "Visual"))
+		plot(VOTWave);
+		text(MaxStart * FFTSize, VOTWave(MaxStart * FFTSize + 1), "x VOT");
+		hold off;
+	end
 end
 

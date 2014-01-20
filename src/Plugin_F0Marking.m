@@ -1,6 +1,7 @@
 function Plugin_F0Marking(Spectrum, Phase, Wave)
 	global FFTSize;
 	global SampleRate;
+	global Environment;
 	global Plugin_Var_F0;
 	F0 = fix(50 * FFTSize / SampleRate + 1);
 	UBound = fix(1500 / SampleRate * FFTSize);
@@ -18,6 +19,8 @@ function Plugin_F0Marking(Spectrum, Phase, Wave)
 		end
 	end
 	Plugin_Var_F0 = F0;
-	text(F0, Spectrum(F0), cstrcat("x ", mat2str(fix(F0 * SampleRate / FFTSize)), "Hz"));
+	if(strcmp(Environment, "Visual"))
+		text(F0, Spectrum(F0), cstrcat("x ", mat2str(fix(F0 * SampleRate / FFTSize)), "Hz"));
+	endif
 end
 

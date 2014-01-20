@@ -16,19 +16,28 @@ global SpectrumUpperRange;
 global DBLowerRange;
 global DBUpperRange;
 
+global Environment;
+Environment = "Visual";
+
+function Empty
+end
+
 global Plugin_Wave = [
-		"Plugin_VOTMarking"
+		"Empty"
+	#	"Plugin_VOTMarking"
 	];
 global Plugin_Spectrum = [
-		"Plugin_F0Marking"
-		"Plugin_Freq2Pitch"
+		"Plugin_F0Marking_ByPhase"
+	#	"Plugin_F0Marking"
+	#	"Plugin_Freq2Pitch"
 	#	"Plugin_HarmonicMarking"
+		"Plugin_HarmonicMarking_Naive"
 	#	"Plugin_PhaseFigure"
 	];
 
 FFTSize = 2048;
 SpectrumLowerRange = 0;
-SpectrumUpperRange = 5500;
+SpectrumUpperRange = 8500;
 DBLowerRange = - 70;
 DBUpperRange = 40;
 WindowFunc = @hanning;
@@ -63,7 +72,6 @@ function UpdateView(Wave)
 	for i = 1 : length(Plugin_Wave(:, 1))
 		eval(cstrcat(Plugin_Wave(i, :), "(Wave(PlotLeft : fix(Right)));"));
 	end
-	#VOTMarking(Wave(PlotLeft : fix(Right)));
 end
 
 function [Ret, RetPhase] = GenerateSpectrum(Wave)
@@ -75,7 +83,7 @@ function [Ret, RetPhase] = GenerateSpectrum(Wave)
 	RetPhase = arg(X);
 end
 
-function [Ret, RetPhase, RetWave] = UpdateSpectrum(Wave)
+function [Ret, RetPhase, RetWave, ExtWave] = UpdateSpectrum(Wave)
 	global ViewPos;
 	global ViewWidth;
 	global Length;
@@ -89,6 +97,7 @@ function [Ret, RetPhase, RetWave] = UpdateSpectrum(Wave)
 		Right = Length;
 	end
 	RetWave = Wave(Left : Right - 1);
+	ExtWave = Wave(Left : Right - 1 + 128);
 	[Ret, RetPhase] = GenerateSpectrum(RetWave);
 end
 
@@ -124,7 +133,7 @@ printf("O - Open wave file.\n");
 fflush(stdout);
 
 while(1)
-	[Spectrum, Phase, Wave] = UpdateSpectrum(OrigWave);
+	[Spectrum, Phase, Wave, ExtWave] = UpdateSpectrum(OrigWave);
 	figure(2);
 	LBound = fix(FFTSize / SampleRate * SpectrumLowerRange);
 	UBound = fix(FFTSize / SampleRate * SpectrumUpperRange);
@@ -134,7 +143,7 @@ while(1)
 	UpdatePlotTick(SpectrumLowerRange, SpectrumUpperRange, DBLowerRange);
 
 	for i = 1 : length(Plugin_Spectrum(:, 1))
-		eval(cstrcat(Plugin_Spectrum(i, :), "(Spectrum, Phase, Wave);"));
+		eval(cstrcat(Plugin_Spectrum(i, :), "(Spectrum, Phase, Wave, ExtWave);"));
 	end
 
 	figure(1);
