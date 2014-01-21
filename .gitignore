@@ -1,2 +1,5 @@
 *~
 octave-workspace
+*.oct
+*.o
+
