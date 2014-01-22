@@ -1,7 +1,7 @@
 clear;
 addpath("./");
 
-Version = "0.21";
+Version = "0.3";
 
 global FFTSize;
 global SampleRate;
@@ -22,16 +22,22 @@ Environment = "Visual";
 function Empty
 end
 
+global Plugin_Load = [
+		"Empty"
+		"Plugin_Load_PulseMarking"
+	];
 global Plugin_Wave = [
 		"Empty"
+		"Plugin_PulseMarking"
 	#	"Plugin_VOTMarking"
 	];
 global Plugin_Spectrum = [
+		"Empty"
 		"Plugin_F0Marking_ByPhase"
 	#	"Plugin_F0Marking"
 	#	"Plugin_Freq2Pitch"
 	#	"Plugin_HarmonicMarking"
-		"Plugin_HarmonicMarking_Naive"
+	#	"Plugin_HarmonicMarking_Naive"
 	#	"Plugin_PhaseFigure"
 	];
 
@@ -170,6 +176,9 @@ while(1)
 		Window = hanning(FFTSize);
 		ViewPos = fix(Length / 2);
 		ViewWidth = ViewPos;
+		for i = 1 : length(Plugin_Load(:, 1))
+			eval(cstrcat(Plugin_Load(i, :), "(OrigWave);"));
+		end
 	elseif(Button == Button_Exit)
 		break;
 	end
