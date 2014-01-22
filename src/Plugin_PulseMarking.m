@@ -1,4 +1,4 @@
-function Plugin_VOTMarking(Wave)
+function Plugin_PulseMarking(Wave)
 	global Plugin_Var_Pulses;
 	global ViewPos;
 	global ViewWidth;
