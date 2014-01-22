@@ -44,7 +44,7 @@ global Plugin_Load = [
 global Plugin_Wave = [
                 "Empty"
                 "Plugin_PulseMarking"
-        #       "Plugin_VOTMarking"
+                "Plugin_VOTMarking"
         ];
 
 #  Functions in Plugin_Spectrum are called when a spectrum redraw takes place.
@@ -64,14 +64,14 @@ global Plugin_Spectrum = [
         #       "Plugin_F0Marking"
         #       "Plugin_Freq2Pitch"
         #       "Plugin_HarmonicMarking"
-        #       "Plugin_HarmonicMarking_Naive"
+                "Plugin_HarmonicMarking_Naive"
         #       "Plugin_PhaseFigure"
         ];
 
 #  The following variables specify the feature of the spectrum figure.
 FFTSize = 2048;
 SpectrumLowerRange = 0;
-SpectrumUpperRange = 8500;
+SpectrumUpperRange = 15000;
 DBLowerRange = - 70;
 DBUpperRange = 40;
 WindowFunc = @hanning;
