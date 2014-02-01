@@ -35,7 +35,8 @@ end
 global Plugin_Load = [
                 "Empty"
         #       "Plugin_Load_PulseMarking"
-                "Plugin_Load_PulseMarking_Naive"
+                "Plugin_Load_PulseMarking_Stable"
+        #       "Plugin_Load_PulseMarking_Naive"
         ];
 
 #  Functions in Plugin_Wave are called when a waveform redraw takes place.

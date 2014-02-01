@@ -1,9 +1,8 @@
-#  Plugin_Load_PulseMarking.m
-#    Marks the estimated glottal pulses of voice signal in the visible area;
-#      an octave equivalent of praat's method.
+#  Plugin_Load_PulseMarking_Naive.m
+#    Marks the estimated glottal pulses of voice signal in the visible area by
+#      finding maximum and minimum within certain range.
 #    The result is stored in global variable Plugin_Var_Pulses.
 #  Depends on Plugin_VOTMarking and Plugin_F0Marking.
-#  Requires octave-forge signal package.
 
 function Plugin_Load_PulseMarking_Naive(Wave)
         global Environment;
@@ -83,8 +82,8 @@ function Ret = MarkPeriodAt(Wave, Center)
         global SampleRate;
         global Window;
         global Plugin_Var_F0;
-        Part = Wave(Center - FFTSize / 2 + 2048 : ...
-                    Center + FFTSize / 2 - 1 + 2048);
+        Part = Wave(Center - FFTSize / 2 : ...
+                    Center + FFTSize / 2 - 1);
         X = fft(Part .* Window);
         Plugin_F0Marking(20 * log10(abs(X)));
         Ret = fix(FFTSize / Plugin_Var_F0);
