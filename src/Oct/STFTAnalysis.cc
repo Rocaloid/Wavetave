@@ -35,7 +35,7 @@ DEFUN_DLD (STFTAnalysis, args, nargout, "")
     
     //Complex Frames returned by this function.
     //CFrames(TimeIndex, BinIndex);
-    ComplexNDArray CFrames(dim_vector(WinNum, FFTSize));
+    ComplexNDArray CFrames(dim_vector(WinNum + 1, FFTSize));
     //Buffer for windowed wave;
     NDArray WinBuffer;
     WinBuffer.resize1(WinSize);
