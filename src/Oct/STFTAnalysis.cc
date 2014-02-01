@@ -36,24 +36,24 @@ DEFUN_DLD (STFTAnalysis, args, nargout, "")
     //Complex Frames returned by this function.
     //CFrames(TimeIndex, BinIndex);
     ComplexNDArray CFrames(dim_vector(WinNum, FFTSize));
-	//Buffer for windowed wave;
-	NDArray WinBuffer;
-	WinBuffer.resize1(WinSize);
-	//Buffer for untransformed wave;
-	NDArray PreBuffer;
-	PreBuffer.resize1(FFTSize);
-	//Buffer for transformed wave;
-	ComplexNDArray FFTBuffer;
-	FFTBuffer.resize1(FFTSize);
-	
-	int i, j;
-	for(i = 0; i <= WinNum; i ++)
-	{
-	    int Base = i * HopSize;
-	    
-	    //Window & Copy
-	    for(j = 0; j < WinSize; j ++)
-	        WinBuffer(j) = Wave(Base + j) * Window(j);
+    //Buffer for windowed wave;
+    NDArray WinBuffer;
+    WinBuffer.resize1(WinSize);
+    //Buffer for untransformed wave;
+    NDArray PreBuffer;
+    PreBuffer.resize1(FFTSize);
+    //Buffer for transformed wave;
+    ComplexNDArray FFTBuffer;
+    FFTBuffer.resize1(FFTSize);
+    
+    int i, j;
+    for(i = 0; i <= WinNum; i ++)
+    {
+        int Base = i * HopSize;
+        
+        //Window & Copy
+        for(j = 0; j < WinSize; j ++)
+            WinBuffer(j) = Wave(Base + j) * Window(j);
         Zeropad(& PreBuffer, & WinBuffer, WinSize, FFTSize);
         
         //Do fft
@@ -62,7 +62,7 @@ DEFUN_DLD (STFTAnalysis, args, nargout, "")
         //Store
         for(j = 0; j < FFTSize; j ++)
             CFrames(i, j) = FFTBuffer(j);
-	}
+    }
 
     return octave_value(CFrames);
 }
