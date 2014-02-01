@@ -18,16 +18,16 @@ function Plugin_PulseMarking(Wave)
                 Right = Length;
         end
         #Large observe window will be very slow.
-        if(Right - Left < 5000)
+        if(Right - Left < 10000)
                 for i = Plugin_Var_Pulses
                         if(i > Left && i < Right)
                                 i = fix(i - Left) + 1;
                                 #The position of labels depends on signs of
                                 #  the peaks.
                                 if(Wave(i) > 0)
-                                        text(i, + 0.2, "|");
+                                        text(i, + 0.05, "|");
                                 else
-                                        text(i, - 0.2, "|");
+                                        text(i, - 0.05, "|");
                                 end
                         end
                 end

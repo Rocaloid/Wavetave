@@ -23,3 +23,7 @@ To get it running on your computer:
 
 You can configure the plugins by modifying the source, as described in `SpectrumVisualizer.m`
 
+---
+
+`MinCVE` is an experimental and incomplete version of the upcoming `CVE3.5`. It aims at proving the feasibility of `CVE3.5`.
+

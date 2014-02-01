@@ -1,5 +1,5 @@
 /*
-* LinearPrediction.c
+* LinearPrediction.cc
 * Copyright (C) 2013 Sleepwalking
 *
 * Redistribution and use in source and binary forms, with or without

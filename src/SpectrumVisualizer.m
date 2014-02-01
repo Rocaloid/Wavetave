@@ -34,7 +34,8 @@ end
 #  Wave: an array of the whole loaded signal.
 global Plugin_Load = [
                 "Empty"
-                "Plugin_Load_PulseMarking"
+        #       "Plugin_Load_PulseMarking"
+                "Plugin_Load_PulseMarking_Naive"
         ];
 
 #  Functions in Plugin_Wave are called when a waveform redraw takes place.
@@ -43,8 +44,9 @@ global Plugin_Load = [
 #  Wave: an array of signal contained in the visible area.
 global Plugin_Wave = [
                 "Empty"
+        #       "Plugin_UnvoicedDetection"
                 "Plugin_PulseMarking"
-                "Plugin_VOTMarking"
+        #       "Plugin_VOTMarking"
         ];
 
 #  Functions in Plugin_Spectrum are called when a spectrum redraw takes place.
@@ -64,14 +66,14 @@ global Plugin_Spectrum = [
         #       "Plugin_F0Marking"
         #       "Plugin_Freq2Pitch"
         #       "Plugin_HarmonicMarking"
-                "Plugin_HarmonicMarking_Naive"
+        #       "Plugin_HarmonicMarking_Naive"
         #       "Plugin_PhaseFigure"
         ];
 
 #  The following variables specify the feature of the spectrum figure.
 FFTSize = 2048;
 SpectrumLowerRange = 0;
-SpectrumUpperRange = 15000;
+SpectrumUpperRange = 7000;
 DBLowerRange = - 70;
 DBUpperRange = 40;
 WindowFunc = @hanning;
@@ -102,7 +104,7 @@ function UpdateView(Wave)
         end
         PlotLeft = fix(Left);
         plot(Wave(PlotLeft : fix(Right)));
-        axis([0, Right - PlotLeft, - 0.3, 0.3]);
+        axis([0, Right - PlotLeft, - 0.35, 0.35]);
         text(ViewPos - PlotLeft, Wave(fix(ViewPos)), "x");
 
         #Evaluates Plugin_Wave plugins.

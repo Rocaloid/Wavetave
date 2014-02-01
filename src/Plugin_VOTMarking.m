@@ -66,6 +66,10 @@ function Plugin_VOTMarking(Wave)
                         if(c - HoldStart > MaxHold)
                                 MaxHold = c - HoldStart;
                                 MaxStart = HoldStart;
+                                #Mark the long enough stroke as the voiced part.
+                                if(c - HoldStart > 8)
+                                        break;
+                                end
                         end
                 end
         end
