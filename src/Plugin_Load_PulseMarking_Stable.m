@@ -6,8 +6,8 @@
 #      more robust than Plugin_Load_PulseMarking and Plugin_PulseMarking_Naive.
 #    Suitable for PSOLA.
 #    The result is stored in global variable Plugin_Var_Pulses.
-#  Depends on Plugin_VOTMarking, Plugin_F0Marking, STFTAnalysis and
-#    STFTSynthesis.
+#  Depends on Plugin_VOTMarking, Plugin_F0Marking, STFTAnalysis, STFTSynthesis
+#    and MaxCorrelation.
 
 function Plugin_Load_PulseMarking_Stable(Wave)
         global Environment;
@@ -71,62 +71,51 @@ function Plugin_Load_PulseMarking_Stable(Wave)
                                    fix(FFTSize / Plugin_Var_F0) * 2);
         #Find the corresponding peak in low passed wave.
         [Y, InitX] = MaxCenteredAt(LWave, InitX, 15);
-        Plugin_Var_Pulses(1) = InitX;
         
         c = 1;
         X = InitX;
-        CurrentPos = InitX
+        CurrentPos = InitX;
         Period_ = fix(FFTSize / Plugin_Var_F0);
         Period  = fix(FFTSize / Plugin_Var_F0);
+        InitPeriod = Period;
 
         #Backward
         while(CurrentPos > Plugin_Var_VOT)
-                Period_ = CurrentPos - X;
                 if(abs(Period - Period_) < 20)
                         Period = Period_;
                 end
                 
                 #Autocorrelation
-                MaxCorr = - 999;
-                MaxPos = 0;
-                CorrLRange = CurrentPos - Period;
-                CorrHRange = CurrentPos + Period;
-                for i = fix(CurrentPos - Period * 1.5) : ...
-                        fix(CurrentPos - Period * 0.5)
-                        CorrVal = corr(LWave(CorrLRange : CorrHRange), ...
-                                       LWave(i - Period : i + Period));
-                        if(CorrVal > MaxCorr)
-                                MaxCorr = CorrVal;
-                                MaxPos = i;
-                        end
-                end
+                MaxPos = MaxCorrelation(LWave, CurrentPos, Period, - 1.0, 0.5);
                 
                 #Peak Correction
                 [Y, MaxPos] = MaxCenteredAt(LWave, MaxPos, 10);
                 Period_ = CurrentPos - MaxPos;
-                CurrentPos = MaxPos
+                CurrentPos = MaxPos;
                 Plugin_Var_Pulses(c) = CurrentPos;
                 c ++;
         end
 
-        #Plugin_Var_Pulses(c) = InitX;
-        #c ++;
+        Plugin_Var_Pulses(c) = InitX;
+        c ++;
         #Forward
-        #CurrentPos = InitX;
-        #Period = InitPeriod;
-        #while(CurrentPos < Length - FFTSize * 2)
-                #Remeausre
-                #Period_ = MarkPeriodAt(Wave, CurrentPos);
-        #        Period_ = X - CurrentPos;
-        #        if(abs(Period - Period_) < 50)
-        #                Period = Period_;
-        #        end
-                #Find previous peak
-        #        [Y, X] = MaxCenteredAt_Window(Magn, Wind, CurrentPos + Period);
-        #        CurrentPos = X;
-        #        Plugin_Var_Pulses(c) = X;
-        #        c ++;
-        #end
+        CurrentPos = InitX;
+        Period = InitPeriod;
+        while(CurrentPos < Length - FFTSize * 2)
+                if(abs(Period - Period_) < 20)
+                        Period = Period_;
+                end
+                
+                #Autocorrelation
+                MaxPos = MaxCorrelation(LWave, CurrentPos, Period, + 1.0, 0.5);
+                
+                #Peak Correction
+                [Y, MaxPos] = MaxCenteredAt(LWave, MaxPos, 10);
+                Period_ = MaxPos - CurrentPos;
+                CurrentPos = MaxPos;
+                Plugin_Var_Pulses(c) = CurrentPos;
+                c ++;
+        end
 
         Plugin_Var_Pulses = Plugin_Var_Pulses(1 : c - 1);
 
@@ -148,12 +137,6 @@ end
 
 function [Y, X] = MaxCenteredAt(Wave, Center, Width)
         [Y, X] = max(Wave(Center - Width : Center + Width));
-        X += Center - Width;
-end
-
-function [Y, X] = MaxCenteredAt_Window(Wave, Window, Center)
-        Width = fix(length(Window) / 2);
-        [Y, X] = max(Wave(Center - Width : Center + Width - 1) .* Window);
         X += Center - Width;
 end
 

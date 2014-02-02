@@ -25,9 +25,9 @@ function Plugin_PulseMarking(Wave)
                                 #The position of labels depends on signs of
                                 #  the peaks.
                                 if(Wave(i) > 0)
-                                        text(i, + 0.05, "|");
+                                        text(i, + 0.3, "|");
                                 else
-                                        text(i, - 0.05, "|");
+                                        text(i, - 0.3, "|");
                                 end
                         end
                 end

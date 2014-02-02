@@ -36,7 +36,7 @@ function Plugin_VOTMarking(Wave)
                 #Generate decibel magnitude spectrums and find the maximum.
                 Amp = 20 * log10(abs(fft(Wave(i : i + FFTSize - 1))));
                 Max = max(Amp(fix(300 * FFTSize / SampleRate) : ...
-                              fix(1500 * FFTSize / SampleRate)));
+                              fix(800 * FFTSize / SampleRate)));
                 #Connect the dots in Visual mode.
                 if(strcmp(Environment, "Visual"))
                         for j = 0 : FFTSize - 1
