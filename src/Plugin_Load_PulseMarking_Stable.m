@@ -49,39 +49,65 @@ function Plugin_Load_PulseMarking_Stable(Wave)
         Frames(:, LPF : FFTSize / 2) = 0;
         LWave = STFTSynthesis(Frames, Window, FFTSize, 256);
         
+        #Determine whether the most prominent peak is concave or convex.
+        CConcave = 0;
+        CConvex  = 0;
+        for i = Plugin_Var_VOT + 1024 : FFTSize : Length - FFTSize
+                [Y, X] = PeakCenteredAt(Wave, i, ...
+                                        fix(FFTSize / Plugin_Var_F0) * 2);
+                if(Y > 0)
+                        CConvex ++;
+                else
+                        CConcave ++;
+                end
+        end
+        #Flip the waves if most peaks are concave.
+        if(CConcave > CConvex)
+                LWave = - LWave;
+                Wave  = - Wave;
+        end
         #Initial peak finding
+        [Y, InitX] = MaxCenteredAt(Wave, Plugin_Var_VOT + 2048, ...
+                                   fix(FFTSize / Plugin_Var_F0) * 2);
+        #Find the corresponding peak in low passed wave.
+        [Y, InitX] = MaxCenteredAt(LWave, InitX, 15);
+        Plugin_Var_Pulses(1) = InitX;
         
-
-        #Magn = abs(Wave);
-        #Wind(1 : 100, 1) = 1;
-
-        #Initial Peak
-        #Period = MarkPeriodAt(Wave, Plugin_Var_VOT + 2048);
-        #[Y, InitX] = MaxCenteredAt(Magn, Plugin_Var_VOT + 2048, Period);
-        #if(Wave(InitX) > 0)
-        #        Magn = Wave + 1;
-        #else
-        #        Magn = - Wave + 1;
-        #end
-        #CurrentPos = InitX;
-        #InitPeriod = Period;
-        #X = InitX;
-
         c = 1;
+        X = InitX;
+        CurrentPos = InitX
+        Period_ = fix(FFTSize / Plugin_Var_F0);
+        Period  = fix(FFTSize / Plugin_Var_F0);
+
         #Backward
-        #while(CurrentPos > Plugin_Var_VOT)
-                #Remeausre
-                #Period_ = MarkPeriodAt(Wave, CurrentPos);
-        #        Period_ = CurrentPos - X;
-        #        if(abs(Period - Period_) < 50)
-        #                Period = Period_;
-        #        end
-                #Find previous peak
-        #        [Y, X] = MaxCenteredAt_Window(Magn, Wind, CurrentPos - Period);
-        #        CurrentPos = X;
-        #        Plugin_Var_Pulses(c) = X;
-        #        c ++;
-        #end
+        while(CurrentPos > Plugin_Var_VOT)
+                Period_ = CurrentPos - X;
+                if(abs(Period - Period_) < 20)
+                        Period = Period_;
+                end
+                
+                #Autocorrelation
+                MaxCorr = - 999;
+                MaxPos = 0;
+                CorrLRange = CurrentPos - Period;
+                CorrHRange = CurrentPos + Period;
+                for i = fix(CurrentPos - Period * 1.5) : ...
+                        fix(CurrentPos - Period * 0.5)
+                        CorrVal = corr(LWave(CorrLRange : CorrHRange), ...
+                                       LWave(i - Period : i + Period));
+                        if(CorrVal > MaxCorr)
+                                MaxCorr = CorrVal;
+                                MaxPos = i;
+                        end
+                end
+                
+                #Peak Correction
+                [Y, MaxPos] = MaxCenteredAt(LWave, MaxPos, 10);
+                Period_ = CurrentPos - MaxPos;
+                CurrentPos = MaxPos
+                Plugin_Var_Pulses(c) = CurrentPos;
+                c ++;
+        end
 
         #Plugin_Var_Pulses(c) = InitX;
         #c ++;
@@ -107,16 +133,17 @@ function Plugin_Load_PulseMarking_Stable(Wave)
         Environment = Environment_;
 end
 
-function Ret = MarkPeriodAt(Wave, Center)
-        global FFTSize;
-        global SampleRate;
-        global Window;
-        global Plugin_Var_F0;
-        Part = Wave(Center - FFTSize / 2 : ...
-                    Center + FFTSize / 2 - 1);
-        X = fft(Part .* Window);
-        Plugin_F0Marking(20 * log10(abs(X)));
-        Ret = fix(FFTSize / Plugin_Var_F0);
+function [Y, X] = PeakCenteredAt(Wave, Center, Width)
+        [POSY, POSX] = max(Wave(Center - Width : Center + Width));
+        [NEGY, NEGX] = min(Wave(Center - Width : Center + Width));
+        if(POSY > - NEGY)
+                Y = POSY;
+                X = POSX;
+        else
+                Y = NEGY;
+                X = NEGX;
+        end
+        X += Center - Width;
 end
 
 function [Y, X] = MaxCenteredAt(Wave, Center, Width)

@@ -2,7 +2,7 @@
 #    Marks the estimated glottal pulses of voice signal in the visible area by
 #      finding maximum and minimum within certain range.
 #    The result is stored in global variable Plugin_Var_Pulses.
-#  Depends on Plugin_VOTMarking and Plugin_F0Marking.
+#  Depends on Plugin_VOTMarking, Plugin_F0Marking and Util/GetPeriodAt.m.
 
 function Plugin_Load_PulseMarking_Naive(Wave)
         global Environment;
@@ -12,6 +12,8 @@ function Plugin_Load_PulseMarking_Naive(Wave)
         global FFTSize;
         global SampleRate;
         global Window;
+        
+        addpath("Util");
 
         #Disable plotting.
         Plugin_Var_Pulses = zeros(1, 1000);
@@ -26,7 +28,7 @@ function Plugin_Load_PulseMarking_Naive(Wave)
         Wind(1 : 100, 1) = 1;
 
         #Initial Peak
-        Period = MarkPeriodAt(Wave, Plugin_Var_VOT + 2048);
+        Period = GetPeriodAt(Wave, Plugin_Var_VOT + 2048);
         [Y, InitX] = MaxCenteredAt(Magn, Plugin_Var_VOT + 2048, Period);
         if(Wave(InitX) > 0)
                 Magn = Wave + 1;
@@ -75,18 +77,6 @@ function Plugin_Load_PulseMarking_Naive(Wave)
         Plugin_Var_Pulses = Plugin_Var_Pulses(1 : c - 1);
 
         Environment = Environment_;
-end
-
-function Ret = MarkPeriodAt(Wave, Center)
-        global FFTSize;
-        global SampleRate;
-        global Window;
-        global Plugin_Var_F0;
-        Part = Wave(Center - FFTSize / 2 : ...
-                    Center + FFTSize / 2 - 1);
-        X = fft(Part .* Window);
-        Plugin_F0Marking(20 * log10(abs(X)));
-        Ret = fix(FFTSize / Plugin_Var_F0);
 end
 
 function [Y, X] = MaxCenteredAt(Wave, Center, Width)
