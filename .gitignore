@@ -2,4 +2,5 @@
 octave-workspace
 *.oct
 *.o
+*.cvdb
 

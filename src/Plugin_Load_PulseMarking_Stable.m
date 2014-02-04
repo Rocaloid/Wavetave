@@ -9,7 +9,7 @@
 #  Depends on Plugin_VOTMarking, Plugin_F0Marking, STFTAnalysis, STFTSynthesis
 #    and MaxCorrelation.
 
-function Plugin_Load_PulseMarking_Stable(Wave)
+function Plugin_Load_PulseMarking_Stable(Wave, AnalysisCenter = 0, ReferenceLength = 0)
         global Environment;
         global Plugin_Var_VOT;
         global Plugin_Var_Pulses;
@@ -17,8 +17,6 @@ function Plugin_Load_PulseMarking_Stable(Wave)
         global FFTSize;
         global SampleRate;
         global Window;
-
-        addpath('Oct');
         
         #Disable plotting.
         Plugin_Var_Pulses = zeros(1, 1000);
@@ -28,10 +26,16 @@ function Plugin_Load_PulseMarking_Stable(Wave)
         #Get Voice Onset Time.
         Plugin_VOTMarking(Wave);
         Length = length(Wave);
+        if(AnalysisCenter == 0)
+                AnalysisCenter = fix(Length / 2);
+        end
+        if(ReferenceLength == 0)
+                ReferenceLength = Length;
+        end
         
         #Find determining harmonic index.
-        WavePart = Wave(Plugin_Var_VOT + 2048 : ...
-                   Plugin_Var_VOT + 2047 + FFTSize) .* Window;
+        WavePart = Wave(Plugin_Var_VOT + AnalysisCenter : ...
+                   Plugin_Var_VOT + AnalysisCenter - 1 + FFTSize) .* Window;
         Amp = 20 * log10(abs(fft(WavePart)));
         MaxAmp = max(Amp);
         #Search from right to left.
@@ -52,7 +56,8 @@ function Plugin_Load_PulseMarking_Stable(Wave)
         #Determine whether the most prominent peak is concave or convex.
         CConcave = 0;
         CConvex  = 0;
-        for i = Plugin_Var_VOT + 1024 : FFTSize : Length - FFTSize
+        for i = Plugin_Var_VOT + 1024 : FFTSize : min(Length - FFTSize,
+                Plugin_Var_VOT + ReferenceLength)
                 [Y, X] = PeakCenteredAt(Wave, i, ...
                                         fix(FFTSize / Plugin_Var_F0) * 2);
                 if(Y > 0)
@@ -67,7 +72,7 @@ function Plugin_Load_PulseMarking_Stable(Wave)
                 Wave  = - Wave;
         end
         #Initial peak finding
-        [Y, InitX] = MaxCenteredAt(Wave, Plugin_Var_VOT + 2048, ...
+        [Y, InitX] = MaxCenteredAt(Wave, AnalysisCenter, ...
                                    fix(FFTSize / Plugin_Var_F0) * 2);
         #Find the corresponding peak in low passed wave.
         [Y, InitX] = MaxCenteredAt(LWave, InitX, 15);

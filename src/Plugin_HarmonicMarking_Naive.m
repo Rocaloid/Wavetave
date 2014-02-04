@@ -11,16 +11,33 @@ function Plugin_HarmonicMarking_Naive(Spectrum, Phase, Wave)
         global Plugin_Var_F0;
         global Plugin_Var_F0_Exact;
         global SpectrumUpperRange;
+        global Environment;
+        global Plugin_Var_Harmonics_Freq;
+        global Plugin_Var_Harmonics_Magn;
         SpectrumUpperBin = SpectrumUpperRange * FFTSize / SampleRate;
 
+        PinX = Plugin_Var_F0_Exact * FFTSize / SampleRate;
+        PinY = max(Spectrum(fix(PinX) - 3 : fix(PinX) + 3));
+        Plugin_Var_Harmonics_Freq = 0;
+        Plugin_Var_Harmonics_Magn = 0;
+        Plugin_Var_Harmonics_Freq(1) = Plugin_Var_F0_Exact;
+        Plugin_Var_Harmonics_Magn(1) = PinY;
         #If the data is valid
         if(Plugin_Var_F0_Exact > 50)
                 for i = 2 : fix(SpectrumUpperBin / Plugin_Var_F0)
+                        #Finding maximum
                         PinX = Plugin_Var_F0_Exact * FFTSize / SampleRate * i;
                         PinY = max(Spectrum(fix(PinX) - 3 : fix(PinX) + 3));
-                        text(PinX, PinY + 5, strcat("H", mat2str(i - 1)));
-                        text(PinX, PinY, cstrcat("x ",
-                             mat2str(fix(PinX * SampleRate / FFTSize)), "Hz"));
+                        
+                        Plugin_Var_Harmonics_Freq(i) = Plugin_Var_F0_Exact * i;
+                        Plugin_Var_Harmonics_Magn(i) = PinY;
+                        
+                        #Plotting
+                        if(strcmp(Environment, "Visual"))
+                                text(PinX, PinY + 5, strcat("H", mat2str(i - 1)));
+                                text(PinX, PinY, cstrcat("x ",
+                                     mat2str(fix(PinX * SampleRate / FFTSize)), "Hz"));
+                        end
                 end
         endif
 end
