@@ -47,7 +47,7 @@ global Plugin_Wave = [
                 "Empty"
         #       "Plugin_UnvoicedDetection"
                 "Plugin_PulseMarking"
-        #       "Plugin_VOTMarking"
+                "Plugin_VOTMarking"
         ];
 
 #  Functions in Plugin_Spectrum are called when a spectrum redraw takes place.

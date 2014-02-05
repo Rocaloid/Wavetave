@@ -32,7 +32,8 @@ function Ret = GenCVDB(Path, Name)
         
         #Find pulses for PSOLA manipulation.
         global Plugin_Var_Pulses;
-        Plugin_Load_PulseMarking_Stable(OrigWave, Plugin_Var_VOT + 2048, FFTSize * 5);
+        Plugin_Load_PulseMarking_Stable(OrigWave, Plugin_Var_VOT + 2048,
+                                        FFTSize * 5);
         #Sort by increasing trend.
         Plugin_Var_Pulses = sort(Plugin_Var_Pulses);
         
@@ -87,11 +88,12 @@ function Ret = GenCVDB(Path, Name)
                 Plugin_HarmonicMarking_Naive(Amp, Arg, Selection);
                 for j = 1 : length(Plugin_Var_Harmonics_Magn)
                         #Decibel to logarithmic sinusoidal magnitude.
+                        [Freq, Magn] = GetExactPeak(Amp, ...
+                                       Plugin_Var_Harmonics_Freq(j));
                         CVDB_Sinusoid_Magn(c, j) = log(...
-                                10 ^ (Plugin_Var_Harmonics_Magn(j) / 20) ...
+                                10 ^ (Magn / 20) ...
                                    / FFTSize * 4);
-                        CVDB_Sinusoid_Freq(c, j) = ...
-                                Plugin_Var_Harmonics_Freq(j);
+                        CVDB_Sinusoid_Freq(c, j) = Freq;
                 end
                 
                 #Spectral subtraction.
@@ -99,11 +101,12 @@ function Ret = GenCVDB(Path, Name)
                                                CVDB_Sinusoid_Magn(c, : ), ...
                                                FFTSize)';
                 X2 = abs(fft(fftshift(Resynth .* Window)));
-                plot(log(abs(X)));
-	        axis([1, 400, - 6, 4]);
-                sleep(1);
-                plot(log(max(0, abs(X)-X2)));
-	        axis([1, 400, - 6, 4]);
+                plot(log(abs(X)), "color", "red", "linewidth", 2);
+	        hold on
+                plot(log(X2), "color", "blue");
+                plot(max(- 6, log(max(0, abs(X)-X2))), "color", "green");
+	        axis([1, 300, - 6, 4]);
+	        hold off
                 sleep(1);
                 
                 c ++;
