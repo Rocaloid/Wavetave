@@ -110,14 +110,14 @@ function Ret = GenCVDB(Path, Name)
                 Regenerate = EnvelopeInterpolate(CVDB_Residual(c / 2, : ),
                                                  FFTSize / 2, 8);
                 
-                if(1) #Plot Switch
+                if(0) #Plot Switch
                 plot(log(abs(X)), "color", "red", "linewidth", 2);
 	        hold on
                 #plot(log(ResynthX), "color", "blue");
                 plot(max(- 6, ResidualX), ...
                               "color", "green", "linewidth", 2);
                 #plot(CVDB_Residual(c, : ));
-                plot(Regenerate);
+                plot(Regenerate - 0.3);
 	        axis([1, 400, - 6, 4]);
 	        hold off
                 sleep(1);
@@ -128,17 +128,22 @@ function Ret = GenCVDB(Path, Name)
                 c ++;
         end
         
+        CVDB_Residual = int8(12 * CVDB_Residual + 60);
+        CVDB_Sinusoid_Magn = int16(1000 * CVDB_Sinusoid_Magn);
+        CVDB_Sinusoid_Freq = uint16(6 * CVDB_Sinusoid_Freq);
+        CVDB_Wave = int16(OrigWave(1 : Plugin_Var_VOT + FFTSize * 2) * 32767);
+        
         #Save.
-        CVDB_Wave = OrigWave;
+        #CVDB_Wave = OrigWave;
         CVDB_Length = Length;
         CVDB_VOT = Plugin_Var_VOT;
         CVDB_Pulses = Plugin_Var_Pulses;
         save(cstrcat(Name, ".cvdb"), "-float-binary", "-z", ...
-                #"CVDB_Wave", ...
+                "CVDB_Wave", ...
                 "CVDB_Length", ...
                 "CVDB_VOT", ...
                 "CVDB_FramePosition", ...
-                "CVDB_PitchCurve", ...
+                #"CVDB_PitchCurve", ... //CVDB_Sinusoid_Freq( : , 0)
                 "CVDB_Sinusoid_Freq", ...
                 "CVDB_Sinusoid_Magn", ...
                 "CVDB_Residual", ...
