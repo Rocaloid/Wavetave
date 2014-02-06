@@ -96,18 +96,34 @@ function Ret = GenCVDB(Path, Name)
                         CVDB_Sinusoid_Freq(c, j) = Freq;
                 end
                 
+                #Store residual every 2 hops for data compression.
+                if(mod(c, 2) == 0)
+                
                 #Spectral subtraction.
                 Resynth = SinusoidalFrameSynth(CVDB_Sinusoid_Freq(c, : ), ...
                                                CVDB_Sinusoid_Magn(c, : ), ...
                                                FFTSize)';
-                X2 = abs(fft(fftshift(Resynth .* Window)));
+                ResynthX = abs(fft(fftshift(Resynth .* Window)));
+                ResidualX = log(max(0, abs(X) - ResynthX));
+                CVDB_Residual(c / 2, : ) = SpectralEnvelope( ...
+                                       ResidualX(1 : FFTSize / 2 - 1), 8);
+                Regenerate = EnvelopeInterpolate(CVDB_Residual(c / 2, : ),
+                                                 FFTSize / 2, 8);
+                
+                if(1) #Plot Switch
                 plot(log(abs(X)), "color", "red", "linewidth", 2);
 	        hold on
-                plot(log(X2), "color", "blue");
-                plot(max(- 6, log(max(0, abs(X)-X2))), "color", "green");
-	        axis([1, 300, - 6, 4]);
+                #plot(log(ResynthX), "color", "blue");
+                plot(max(- 6, ResidualX), ...
+                              "color", "green", "linewidth", 2);
+                #plot(CVDB_Residual(c, : ));
+                plot(Regenerate);
+	        axis([1, 400, - 6, 4]);
 	        hold off
                 sleep(1);
+                end
+                
+                end
                 
                 c ++;
         end
@@ -125,6 +141,7 @@ function Ret = GenCVDB(Path, Name)
                 "CVDB_PitchCurve", ...
                 "CVDB_Sinusoid_Freq", ...
                 "CVDB_Sinusoid_Magn", ...
+                "CVDB_Residual", ...
                 "CVDB_Pulses")
 end
 

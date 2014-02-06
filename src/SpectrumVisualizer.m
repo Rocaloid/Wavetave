@@ -5,6 +5,7 @@
 
 clear;
 addpath("./");
+addpath("./Oct");
 
 Version = "0.3";
 

@@ -16,6 +16,6 @@ function [RetFreq, RetAmp] = GetExactPeak(Spectrum, Center)
         if(RetAmp > b * 1.2)
                 RetAmp = b * 1.2;
         end
-        RetAmp = b;
+        #RetAmp = b;
 end
 
