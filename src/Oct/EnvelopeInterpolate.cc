@@ -48,10 +48,6 @@ DEFUN_DLD (EnvelopeInterpolate, args, nargout, "")
         }
     }
     
-    //Fill up
-    for(; j < Size; j ++)
-        Ret(j) = HHeight;
-
     return octave_value(Ret);
 }
 

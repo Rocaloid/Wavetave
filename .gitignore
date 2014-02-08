@@ -3,4 +3,9 @@ octave-workspace
 *.oct
 *.o
 *.cvdb
+*.wav
+*.xz
+*.zip
+*.7z
+*.tar
 

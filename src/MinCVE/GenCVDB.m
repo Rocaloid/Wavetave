@@ -1,8 +1,6 @@
 #  GenCVDB.m
 #    DataBase content generator.
-#  Depends on various Plugins.
-#
-#    Not finished yet.
+#  Depends on various Plugins and Octs.
 
 function Ret = GenCVDB(Path, Name)
         addpath("../");
@@ -25,9 +23,14 @@ function Ret = GenCVDB(Path, Name)
         
         Window = WindowFunc(FFTSize);
         [OrigWave, SampleRate] = wavread(Path);
+        
+        #Cut off unvoiced part.
+        global Plugin_Var_Unvoiced;
+        Plugin_UnvoicedDetection(OrigWave);
+        OrigWave = OrigWave(Plugin_Var_Unvoiced : length(OrigWave));
         Length = length(OrigWave);
 
-        #Find VOT first.
+        #Find VOT.
         Plugin_VOTMarking(OrigWave);
         
         #Find pulses for PSOLA manipulation.
@@ -105,6 +108,8 @@ function Ret = GenCVDB(Path, Name)
                                                FFTSize)';
                 ResynthX = abs(fft(fftshift(Resynth .* Window)));
                 ResidualX = log(max(0, abs(X) - ResynthX));
+                
+                #Extract residual max heights.
                 CVDB_Residual(c / 2, : ) = SpectralEnvelope( ...
                                        ResidualX(1 : FFTSize / 2 - 1), 8);
                 Regenerate = EnvelopeInterpolate(CVDB_Residual(c / 2, : ),
@@ -133,20 +138,50 @@ function Ret = GenCVDB(Path, Name)
         CVDB_Sinusoid_Freq = uint16(6 * CVDB_Sinusoid_Freq);
         CVDB_Wave = int16(OrigWave(1 : Plugin_Var_VOT + FFTSize * 2) * 32767);
         
-        #Save.
-        #CVDB_Wave = OrigWave;
         CVDB_Length = Length;
         CVDB_VOT = Plugin_Var_VOT;
         CVDB_Pulses = Plugin_Var_Pulses;
-        save(cstrcat(Name, ".cvdb"), "-float-binary", "-z", ...
-                "CVDB_Wave", ...
+        
+        #Pre-Compression disabled.
+        
+        #First compression
+        #CVDB_Sinusoid_Magn_Diff = Difference2D(CVDB_Sinusoid_Magn);
+        #CVDB_Sinusoid_Freq_Diff = Difference2D(CVDB_Sinusoid_Freq);
+        #CVDB_Residual_Diff = Difference2D(CVDB_Residual);
+        #CVDB_Wave_Diff = Difference1D(CVDB_Wave);
+        #CVDB_Pulses_Diff = Difference1D(CVDB_Pulses);
+        #CVDB_FramePosition_Diff = Difference1D(CVDB_FramePosition);
+        
+        #Double compression
+        #CVDB_Wave_Diff = Difference1D(CVDB_Wave_Diff);
+        #CVDB_Sinusoid_Magn_Diff = Difference2D(CVDB_Sinusoid_Magn_Diff);
+        #CVDB_Sinusoid_Freq_Diff = Difference2D(CVDB_Sinusoid_Freq_Diff);
+        #CVDB_Pulses_Diff = Difference1D(CVDB_Pulses_Diff);
+        
+        #Save.
+        save(cstrcat(Name, ".cvdb"), "-float-binary", #"-z", ...
                 "CVDB_Length", ...
                 "CVDB_VOT", ...
                 "CVDB_FramePosition", ...
                 #"CVDB_PitchCurve", ... //CVDB_Sinusoid_Freq( : , 0)
+                "CVDB_Wave", ...
                 "CVDB_Sinusoid_Freq", ...
                 "CVDB_Sinusoid_Magn", ...
                 "CVDB_Residual", ...
                 "CVDB_Pulses")
+end
+
+function Ret = Difference1D(Array)
+        Ret(1) = Array(1);
+        for i = 2 : length(Array)
+                Ret(i) = Array(i) - Array(i - 1);
+        end
+end
+
+function Ret = Difference2D(Array)
+        Ret(1, : ) = Array(1, : );
+        for i = 2 : length(Array(: , 1))
+                Ret(i, : ) = Array(i, : ) - Array(i - 1, : );
+        end
 end
 
