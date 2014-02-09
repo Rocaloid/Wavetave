@@ -31,7 +31,13 @@ function Ret = Regenerate(Path)
         
         #----------------------------------------------------------------------
         
-        Ret = PSOLASynthesis(PSOLAMatrix, PSOLAWinHalf, CVDB_Pulses);
+        #Ret = PSOLASynthesis(PSOLAMatrix, PSOLAWinHalf, CVDB_Pulses);
+        CVDB_Sinusoid_Magn = exp(CVDB_Sinusoid_Magn);
+        Ret(1 : CVDB_FramePosition(1)) = 0;
+        Det = DeterministicSynth(CVDB_Sinusoid_Magn, CVDB_Sinusoid_Freq, ...
+                rand(50, 1) * 10, columns(CVDB_Sinusoid_Freq), 256);
+        Ret(CVDB_FramePosition(1) : CVDB_FramePosition + length(Det) - 1) = Det;
+        
         wavwrite(Ret, 44100, 'a.wav');
 end
 
