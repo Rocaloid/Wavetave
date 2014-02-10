@@ -65,7 +65,7 @@ function Ret = GenCVDB(Path, Name)
         
         F0 = StandardF0;
         #SMS Analysis
-        for i = Plugin_Var_VOT : HopSize : Length - FFTSize * 2
+        for i = Plugin_Var_VOT + HopSize * 5 : HopSize : Length - FFTSize * 2
                 CVDB_FramePosition(c) = i;
                 
                 #Cut & Window
@@ -119,14 +119,16 @@ function Ret = GenCVDB(Path, Name)
                 plot(log(abs(X)), "color", "red", "linewidth", 2);
 	        hold on
                 #plot(log(ResynthX), "color", "blue");
-                plot(max(- 6, ResidualX), ...
+                plot(max(- 6, log(ResynthX)), ...
                               "color", "green", "linewidth", 2);
                 #plot(CVDB_Residual(c, : ));
                 plot(Regenerate - 0.3);
-	        axis([1, 400, - 6, 4]);
+	        axis([1, 600, - 6, 4]);
 	        hold off
                 sleep(1);
                 end
+                
+                fflush(stdout);
                 
                 end
                 

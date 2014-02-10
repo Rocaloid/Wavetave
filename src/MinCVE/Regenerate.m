@@ -14,6 +14,11 @@ function Ret = Regenerate(Path)
         global CVDB_Sinusoid_Freq;
         global CVDB_Wave;
         
+        global FFTSize;
+        global Window;
+        FFTSize = 2048;
+        Window = hanning(FFTSize);
+        
         load(Path);
         CVDBUnwrap;
         
@@ -33,11 +38,25 @@ function Ret = Regenerate(Path)
         
         #Ret = PSOLASynthesis(PSOLAMatrix, PSOLAWinHalf, CVDB_Pulses);
         CVDB_Sinusoid_Magn = exp(CVDB_Sinusoid_Magn);
+        
+        #Deterministic
         Ret(1 : CVDB_FramePosition(1)) = 0;
         Det = DeterministicSynth(CVDB_Sinusoid_Magn, CVDB_Sinusoid_Freq, ...
-                rand(50, 1) * 10, columns(CVDB_Sinusoid_Freq), 256);
-        Ret(CVDB_FramePosition(1) : CVDB_FramePosition + length(Det) - 1) = Det;
+                rand(50, 1) * 0, columns(CVDB_Sinusoid_Freq), 256);
+        Ret(CVDB_FramePosition(1) : CVDB_FramePosition + length(Det) - 1) ...
+                 = Det;
         
-        wavwrite(Ret, 44100, 'a.wav');
+        #Stochastic
+        Sto = zeros(1, length(Ret));
+        for i = 1 : rows(CVDB_Residual) * 2 - 1
+                X = GenResidual(CVDB_Residual(fix(i / 2 + 1), : ), 8, FFTSize)';
+                Residual = real(ifft(X)) .* Window;
+                Center = CVDB_FramePosition(i);
+                Sto(Center - FFTSize / 2 : Center + FFTSize / 2 - 1) += Residual';
+        end
+        
+        wavwrite(Ret, 44100, 'sinusoidal.wav');
+        wavwrite(Sto, 44100, 'residual.wav');
+        wavwrite(Sto + Ret, 44100, 'plus.wav');
 end
 

@@ -28,6 +28,16 @@ DEFUN_DLD (DeterministicSynth, args, nargout, "")
     for(i = 0; i < PeakNum; i ++)
         Phase[i] = InitialPhase(i + 1);
 
+    //Avoid 0Hz initial transition.
+    for(k = 0; k < PeakNum; k ++)
+    {
+        if(PeakBuffer_Freq(0, k) < 50)
+        {
+            //PeakBuffer_Freq(0, k) = PeakBuffer_Freq(1, k);
+            PeakBuffer_Amp(0, k) = 0;
+        }
+    }
+        
     //For each control point.
     for(i = 0; i < WinNum - 1; i ++)
     {
@@ -37,7 +47,10 @@ DEFUN_DLD (DeterministicSynth, args, nargout, "")
         for(k = 0; k < PeakNum; k ++)
         {
             if(PeakBuffer_Freq(i + 1, k) < 50)
+            {
                 PeakBuffer_Freq(i + 1, k) = PeakBuffer_Freq(i, k);
+                PeakBuffer_Amp(i + 1, k) = 0;
+            }
         }
         
         //For each sample.
