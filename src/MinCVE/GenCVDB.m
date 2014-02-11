@@ -37,6 +37,16 @@ function Ret = GenCVDB(Path, Name)
         global Plugin_Var_Pulses;
         Plugin_Load_PulseMarking_Stable(OrigWave, Plugin_Var_VOT + 2048,
                                         FFTSize * 5);
+        #Extending pulses backward.
+        l = abs(Plugin_Var_Pulses(2) - Plugin_Var_Pulses(1));
+        p = Plugin_Var_Pulses(1) - l;
+        c = 0;
+        while p > HopSize
+                c ++;
+                FrontPulses(c) = p;
+                p -= l;
+        end
+        #Plugin_Var_Pulses = cat(2, FrontPulses, Plugin_Var_Pulses);
         #Sort by increasing trend.
         Plugin_Var_Pulses = sort(Plugin_Var_Pulses);
         

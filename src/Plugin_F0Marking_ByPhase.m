@@ -24,7 +24,7 @@
 #    Theoretically the result will be perfectly accurate and precise.
 #    The actual performance is limited by noise, windowing and discretization.
 
-function Plugin_F0Marking_ByPhase(Spectrum, Phase, Wave, ExtWave)
+function Plugin_F0Marking_ByPhase(Spectrum, Phase, Wave, ExtWave, InnerProcess = 1)
         global FFTSize;
         global Window;
         global SampleRate;
@@ -40,7 +40,9 @@ function Plugin_F0Marking_ByPhase(Spectrum, Phase, Wave, ExtWave)
         Environment = "Procedure";
 
         #Find approximated frequency.
-        Plugin_F0Marking(Spectrum, Phase, Wave);
+        if(InnerProcess)
+                Plugin_F0Marking(Spectrum, Phase, Wave);
+        end
         #If the approximation is valid.
         if(Plugin_Var_F0 > 1)
                 ThisPhase = Phase(Plugin_Var_F0);

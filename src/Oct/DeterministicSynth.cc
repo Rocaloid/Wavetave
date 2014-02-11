@@ -26,7 +26,7 @@ DEFUN_DLD (DeterministicSynth, args, nargout, "")
 
     double Phase[200];
     for(i = 0; i < PeakNum; i ++)
-        Phase[i] = InitialPhase(i + 1);
+        Phase[i] = InitialPhase(i);
 
     //Avoid 0Hz initial transition.
     for(k = 0; k < PeakNum; k ++)
