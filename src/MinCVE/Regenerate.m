@@ -2,8 +2,6 @@
 #    Regenerates wave from CVDB.
 #    Depends on various Plugins and Octs.
 
-#  Not finished yet.
-
 function Ret = Regenerate(Path)
         addpath("../");
         addpath("../Oct");
@@ -33,10 +31,34 @@ function Ret = Regenerate(Path)
         
         CVDB_Pulses2 = CVDB_Pulses;
         for i = 2 : length(CVDB_Pulses)
-                #CVDB_Pulses(i) = CVDB_Pulses(i - 1) + fix(...
-                #                 (CVDB_Pulses2(i) - CVDB_Pulses2(i - 1)) ...
-                #                 + (sin(i * 0.07) * 5) - 50);
-                #CVDB_Pulses(i) = fix(CVDB_Pulses2(i) * 1.2);
+                #Skip consonant part
+                if(CVDB_Pulses2(i) < CVDB_VOTIndex - 2)
+                        continue;
+                end
+                #Pulse Contraction / Expansion
+                CVDB_Pulses(i) = CVDB_Pulses(i - 1) + fix(...
+                                 (CVDB_Pulses2(i) - CVDB_Pulses2(i - 1)) ...
+                                 / 1.5);
+        end
+        
+        for i = 1 : rows(CVDB_Sinusoid_Magn)
+                #Envelope generation
+                XPeak = CVDB_Sinusoid_Freq(i, : ) / SampleRate * FFTSize;
+                YPeak = CVDB_Sinusoid_Magn(i, : );
+                Spectrum = PeakInterpolate(XPeak, YPeak, FFTSize, - 20);
+                
+                #Spectrum scaling & envelop maintaining
+                XPeak *= 1.5;
+                for j = 1 : length(YPeak)
+                        if(XPeak(j) < 5)
+                                break;
+                        end
+                        YPeak(j) = Spectrum(max(fix(XPeak(j)), 1));
+                end
+                
+                #Dump back
+                CVDB_Sinusoid_Freq(i, : ) = XPeak / FFTSize * SampleRate;
+                CVDB_Sinusoid_Magn(i, : ) = YPeak;
         end
         
         #----------------------------------------------------------------------
@@ -45,7 +67,7 @@ function Ret = Regenerate(Path)
         T = PSOLASynthesis(PSOLAMatrix, PSOLAWinHalf, CVDB_Pulses);
         
         #Approximate F0
-        Center = fix(length(PSOLAWinHalf) / 2);
+        Center = CVDB_VOTIndex;
         CenterPos = CVDB_Pulses(Center);
         Period = CVDB_Pulses(Center) - CVDB_Pulses(Center - 1);
         ApprBin = fix(FFTSize / Period);
@@ -108,7 +130,7 @@ function Ret = Regenerate(Path)
         #Deterministic
         Ret(1 : CenterPos) = 0;
         Det = DeterministicSynth(CVDB_Sinusoid_Magn, CVDB_Sinusoid_Freq, ...
-                InitialPhase, columns(CVDB_Sinusoid_Freq), 256);
+                InitialPhase, fix(columns(CVDB_Sinusoid_Freq) * 2 / 3), 256);
         Ret(CenterPos : CenterPos + length(Det) - 1) ...
                  = Det;
         
