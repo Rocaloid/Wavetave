@@ -77,12 +77,12 @@ function Ret = Regenerate(Path)
         InitialPhase = zeros(50, 1);
         
         Plugin_HarmonicMarking_Naive(Amp, Arg, Selection);
-        for j = 11 : 30
+        for j = 9 : 30
                 CVDB_Sinusoid_Magn(1, j) = - 20;
                 CVDB_Sinusoid_Magn(2, j) = - 20;
                 CVDB_Sinusoid_Magn(3, j) = - 20;
         end
-        for j = 1 : 10
+        for j = 1 : 8
                 #Decibel to logarithmic sinusoidal magnitude.
                 [Freq, Magn] = GetExactPeak(Amp, ...
                                 Plugin_Var_Harmonics_Freq(j));

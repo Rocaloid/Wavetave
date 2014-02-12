@@ -27,6 +27,7 @@ function Ret = GenCVDB(Path, Name)
         #Cut off unvoiced part.
         global Plugin_Var_Unvoiced;
         Plugin_UnvoicedDetection(OrigWave);
+        Plugin_Var_Unvoiced = Plugin_Var_Unvoiced - HopSize;
         OrigWave = OrigWave(Plugin_Var_Unvoiced : length(OrigWave));
         Length = length(OrigWave);
 
@@ -37,8 +38,10 @@ function Ret = GenCVDB(Path, Name)
         global Plugin_Var_Pulses;
         Plugin_Load_PulseMarking_Stable(OrigWave, Plugin_Var_VOT + 2048,
                                         FFTSize * 5);
+        #Sort by increasing trend.
+        Plugin_Var_Pulses = sort(Plugin_Var_Pulses);
         #Extending pulses backward.
-        l = abs(Plugin_Var_Pulses(2) - Plugin_Var_Pulses(1));
+        l = Plugin_Var_Pulses(2) - Plugin_Var_Pulses(1);
         p = Plugin_Var_Pulses(1) - l;
         c = 0;
         while p > HopSize
@@ -46,9 +49,7 @@ function Ret = GenCVDB(Path, Name)
                 FrontPulses(c) = p;
                 p -= l;
         end
-        #Plugin_Var_Pulses = cat(2, FrontPulses, Plugin_Var_Pulses);
-        #Sort by increasing trend.
-        Plugin_Var_Pulses = sort(Plugin_Var_Pulses);
+        Plugin_Var_Pulses = cat(2, flipdim(FrontPulses), Plugin_Var_Pulses);
         
         #Find standard F0.
         c = 1;
