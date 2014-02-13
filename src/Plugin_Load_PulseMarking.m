@@ -16,7 +16,7 @@
 #      reconstruction in Rocaloid's new synthesis engine, which does not
 #      require very accurate pulse marking. However, if you are looking for
 #      glottal pulse extraction techniques for algorithms such as PSOLA, please
-#      refer to praat's method.
+#      refer to praat's method(Plugin_Load_PulseMarking_Stable).
 
 function Plugin_Load_PulseMarking(Wave)
         global Environment;

@@ -21,7 +21,7 @@ function Ret = Regenerate(Path)
         Window = hanning(FFTSize);
         Environment = "Procedure";
         
-        load(Path);
+        load(strcat(Path, ".cvdb"));
         CVDBUnwrap;
         
         [PSOLAMatrix, PSOLAWinHalf] = PSOLAExtraction(CVDB_Wave, CVDB_Pulses);
@@ -38,7 +38,7 @@ function Ret = Regenerate(Path)
                 #Pulse Contraction / Expansion
                 CVDB_Pulses(i) = CVDB_Pulses(i - 1) + fix(...
                                  (CVDB_Pulses2(i) - CVDB_Pulses2(i - 1)) ...
-                                 / 1.5);
+                                 / 1);
         end
         
         for i = 1 : rows(CVDB_Sinusoid_Magn)
@@ -48,7 +48,7 @@ function Ret = Regenerate(Path)
                 Spectrum = PeakInterpolate(XPeak, YPeak, FFTSize, - 20);
                 
                 #Spectrum scaling & envelop maintaining
-                XPeak *= 1.5;
+                XPeak *= 1;
                 for j = 1 : length(YPeak)
                         if(XPeak(j) < 5)
                                 break;
@@ -67,7 +67,7 @@ function Ret = Regenerate(Path)
         T = PSOLASynthesis(PSOLAMatrix, PSOLAWinHalf, CVDB_Pulses);
         
         #Approximate F0
-        Center = CVDB_VOTIndex;
+        Center = fix((length(PSOLAWinHalf) + CVDB_VOTIndex) / 2);
         CenterPos = CVDB_Pulses(Center);
         Period = CVDB_Pulses(Center) - CVDB_Pulses(Center - 1);
         ApprBin = fix(FFTSize / Period);
@@ -146,6 +146,9 @@ function Ret = Regenerate(Path)
                         Residual';
         end
         
+        #Turbulent Noise reconstruction.
+        Sto = GenTurbulentNoise(Ret, Sto, CVDB_Pulses(CVDB_VOTIndex));
+        
         #Fade Out
         T(CenterPos : CenterPos + 255) .*= 1 - (1 : 256)' / 256;
         Ret(CenterPos : CenterPos + 255) .*=  (1 : 256) / 256;
@@ -154,6 +157,6 @@ function Ret = Regenerate(Path)
         wavwrite(T, 44100, 'PSOLA.wav');
         wavwrite(Ret, 44100, 'sinusoidal.wav');
         wavwrite(Sto, 44100, 'residual.wav');
-        wavwrite(Sto + Ret, 44100, 'plus.wav');
+        wavwrite(Sto + Ret, 44100, strcat(Path, ".wav"));
 end
 
