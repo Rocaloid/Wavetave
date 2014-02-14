@@ -41,14 +41,62 @@ function Ret = Regenerate(Path)
                                  / 1);
         end
         
-        for i = 1 : rows(CVDB_Sinusoid_Magn)
+        load i.fmt;
+        A_PeakX = PeakX;
+        A_PeakY = PeakY;
+        A_ValleyX = ValleyX;
+        A_ValleyY = ValleyY;
+        
+        load a.fmt;
+        B_PeakX = PeakX;
+        B_PeakY = PeakY;
+        B_ValleyX = ValleyX;
+        B_ValleyY = ValleyY;
+        
+        D_PeakX = B_PeakX - A_PeakX;
+        D_PeakY = B_PeakY - A_PeakY;
+        D_ValleyX = B_ValleyX - A_ValleyX;
+        D_ValleyY = B_ValleyY - A_ValleyY;
+        
+        OrigEnv = ParabolaInterpolate(A_PeakX, A_PeakY, A_ValleyX, A_ValleyY,
+                                      N, 300, - 12, FFTSize / 2);
+        
+        RowNum = rows(CVDB_Sinusoid_Magn);
+        for i = 1 : RowNum
+                iResidual = fix(i / 2 + 1);
+                #Avoid overflow.
+                if(iResidual > rows(CVDB_Residual))
+                        iResidual = rows(CVDB_Residual);
+                end
+                
                 #Envelope generation
                 XPeak = CVDB_Sinusoid_Freq(i, : ) / SampleRate * FFTSize;
                 YPeak = CVDB_Sinusoid_Magn(i, : );
                 Spectrum = PeakInterpolate(XPeak, YPeak, FFTSize, - 20);
+                RSpectrum = EnvelopeInterpolate(CVDB_Residual(iResidual, : ),
+                                                FFTSize / 2, 8);
                 
-                #Spectrum scaling & envelop maintaining
-                XPeak *= 1;
+                
+                #Pitch shifting
+                #XPeak *= 1;
+                
+                R = i / RowNum;
+                PeakX = A_PeakX + D_PeakX * R;
+                PeakY = A_PeakY + D_PeakY * R;
+                ValleyX = A_ValleyX + D_ValleyX * R;
+                ValleyY = A_ValleyY + D_ValleyY * R;
+                
+                NewEnv = ParabolaInterpolate(PeakX, PeakY, ValleyX, ValleyY,
+                                             N, 300, - 12, FFTSize / 2);
+                Spectrum = (Spectrum(1 : FFTSize / 2) + 13) ./ ...
+                           (OrigEnv + 70) .* (NewEnv + 70) - 13;
+                RSpectrum = (RSpectrum + 8) ./ ...
+                            (OrigEnv + 70) .* (NewEnv + 70) - 8;
+                
+                #plot(NewEnv(1 : 300));
+                #sleep(0.1);
+                
+                #Envelop maintaining
                 for j = 1 : length(YPeak)
                         if(XPeak(j) < 5)
                                 break;
@@ -59,6 +107,8 @@ function Ret = Regenerate(Path)
                 #Dump back
                 CVDB_Sinusoid_Freq(i, : ) = XPeak / FFTSize * SampleRate;
                 CVDB_Sinusoid_Magn(i, : ) = YPeak;
+                #CVDB_Residual(iResidual, : ) = SpectralEnvelope( ...
+                #                                   RSpectrum, 8)(1 : 127);
         end
         
         #----------------------------------------------------------------------
@@ -150,6 +200,7 @@ function Ret = Regenerate(Path)
         
         #Turbulent Noise reconstruction.
         Sto = GenTurbulentNoise(Ret, Sto, CVDB_Pulses(CVDB_VOTIndex));
+        Sto *= 0.6;
         
         #Fade Out
         T(CenterPos : CenterPos + 255) .*= 1 - (1 : 256)' / 256;

@@ -123,7 +123,7 @@ function Ret = GenCVDB(Path, Name)
                 
                 #Extract residual max heights.
                 CVDB_Residual(c / 2, : ) = SpectralEnvelope( ...
-                                       ResidualX(1 : FFTSize / 2 - 1), 8);
+                                               ResidualX(1 : FFTSize / 2), 8);
                 Regenerate = EnvelopeInterpolate(CVDB_Residual(c / 2, : ),
                                                  FFTSize / 2, 8);
                 

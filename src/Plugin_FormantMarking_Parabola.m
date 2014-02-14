@@ -11,6 +11,7 @@ function Plugin_FormantMarking_Parabola()
         PeakX = zeros(10, 1);
         ValleyX = zeros(10, 1);
         ValleyY = zeros(10, 1);
+        N = 4;
         
         Env = zeros(FFTSize, 1);
         
@@ -23,7 +24,7 @@ function Plugin_FormantMarking_Parabola()
         fflush(stdout);
         
         #Three formants
-        for i = 1 : 4
+        for i = 1 : N
                 #Valley i
                 [X, Y] = GetMouseClick();
                 ValleyY(i) = Y;
@@ -45,6 +46,14 @@ function Plugin_FormantMarking_Parabola()
                                            PeakX(i + 1), PeakY(i + 1));
                 plot(Env(1 : fix(PeakX(i + 1))));
         end
+        
+        save("Formant.fmt", "PeakY", "PeakX", "ValleyY", "ValleyX", "N");
+        printf("Saved.\n");
+        fflush(stdout);
+        
+        Env = ParabolaInterpolate(PeakX, PeakY, ValleyX, ValleyY, 
+                                  4, 300, - 12, FFTSize);
+        plot(Env);
         
         [X, Y] = GetMouseClick();
         hold off;

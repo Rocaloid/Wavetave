@@ -1,6 +1,6 @@
 /*  EnvelopeInterpolate.cc
     Generates envelope from an array of heights and a given interval.
-    Returns an NDArray of envelope.
+    Returns an NDArray.
 */
 
 #include <octave/oct.h>

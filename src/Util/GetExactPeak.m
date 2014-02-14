@@ -13,8 +13,8 @@ function [RetFreq, RetAmp] = GetExactPeak(Spectrum, Center)
         RetBin = - a2 / a1 * 0.5;
         RetFreq = (RetBin + Center - 1) * SampleRate / FFTSize;
         RetAmp = a1 * RetBin ^ 2 + a2 * RetBin + b;
-        if(RetAmp > b * 1.2)
-                RetAmp = b * 1.2;
+        if(RetAmp > b * 1.05)
+                RetAmp = b * 1.05;
         end
         #RetAmp = b;
 end
