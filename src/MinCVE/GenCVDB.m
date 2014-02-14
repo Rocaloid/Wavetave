@@ -44,6 +44,7 @@ function Ret = GenCVDB(Path, Name)
         l = Plugin_Var_Pulses(2) - Plugin_Var_Pulses(1);
         p = Plugin_Var_Pulses(1) - l;
         c = 0;
+        FrontPulses = 0;
         while p > HopSize
                 c ++;
                 FrontPulses(c) = p;

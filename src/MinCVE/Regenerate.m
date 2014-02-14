@@ -67,7 +67,7 @@ function Ret = Regenerate(Path)
         T = PSOLASynthesis(PSOLAMatrix, PSOLAWinHalf, CVDB_Pulses);
         
         #Approximate F0
-        Center = fix((length(PSOLAWinHalf) + CVDB_VOTIndex) / 2);
+        Center = fix(length(PSOLAWinHalf) * 0.2 + CVDB_VOTIndex * 0.8);
         CenterPos = CVDB_Pulses(Center);
         Period = CVDB_Pulses(Center) - CVDB_Pulses(Center - 1);
         ApprBin = fix(FFTSize / Period);
@@ -99,12 +99,14 @@ function Ret = Regenerate(Path)
         InitialPhase = zeros(50, 1);
         
         Plugin_HarmonicMarking_Naive(Amp, Arg, Selection);
-        for j = 9 : 30
+        HNum = length(Plugin_Var_Harmonics_Freq);
+        SNum = columns(CVDB_Sinusoid_Magn);
+        for j = HNum + 1 : SNum
                 CVDB_Sinusoid_Magn(1, j) = - 20;
                 CVDB_Sinusoid_Magn(2, j) = - 20;
                 CVDB_Sinusoid_Magn(3, j) = - 20;
         end
-        for j = 1 : 8
+        for j = 1 : HNum
                 #Decibel to logarithmic sinusoidal magnitude.
                 [Freq, Magn] = GetExactPeak(Amp, ...
                                 Plugin_Var_Harmonics_Freq(j));

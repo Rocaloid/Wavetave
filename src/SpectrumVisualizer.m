@@ -36,7 +36,7 @@ end
 global Plugin_Load = [
                 "Empty"
         #       "Plugin_Load_PulseMarking"
-                "Plugin_Load_PulseMarking_Stable"
+        #       "Plugin_Load_PulseMarking_Stable"
         #       "Plugin_Load_PulseMarking_Naive"
         ];
 
@@ -47,7 +47,7 @@ global Plugin_Load = [
 global Plugin_Wave = [
                 "Empty"
         #       "Plugin_UnvoicedDetection"
-                "Plugin_PulseMarking"
+        #       "Plugin_PulseMarking"
                 "Plugin_VOTMarking"
         ];
 
@@ -88,6 +88,7 @@ Button_A = 97;
 Button_S = 115;
 Button_D = 100;
 Button_O = 111;
+Button_M = 109;
 
 #  Draws the time domain signal in the range of visible area.
 function UpdateView(Wave)
@@ -226,6 +227,8 @@ while(1)
                 for i = 1 : length(Plugin_Load(:, 1))
                         eval(cstrcat(Plugin_Load(i, :), "(OrigWave);"));
                 end
+        elseif(Button == Button_M)
+                Plugin_FormantMarking_Parabola();
         elseif(Button == Button_Exit)
                 break; #Exit
         end
