@@ -9,6 +9,10 @@ The aim of Wavetave is to test and design algorithms for Rocaloid.
 
 * Depends on `gnuplot`.
 
+###Reference
+
+* Serra, X. 1989. "A System for Sound Analysis/Transformation/Synthesis based on a Deterministic plus Stochastic Decomposition," Ph.D. Thesis. Stanford University.
+
 ---
 
 The main component of Wavetave is a Spectrum Visualizer, located at `src/SpectrumVisualizer.m`
