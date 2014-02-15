@@ -11,7 +11,9 @@ The aim of Wavetave is to test and design algorithms for Rocaloid.
 
 ###Reference
 
-* Serra, X. 1989. "A System for Sound Analysis/Transformation/Synthesis based on a Deterministic plus Stochastic Decomposition," Ph.D. Thesis. Stanford University.
+* Serra, X. 1989. "A System for Sound Analysis/Transformation/Synthesis based on a Deterministic plus Stochastic Decomposition" Ph.D. Thesis. Stanford University.
+
+* Bonada, Jordi, et al. "Singing voice synthesis combining excitation plus resonance and sinusoidal plus residual models." Proceedings of International Computer Music Conference. 2001.
 
 ---
 
@@ -23,7 +25,7 @@ To get it running on your computer:
 
 `$ octave`
 
-`$ SpectrumVisualizer`
+`octave:1> SpectrumVisualizer`
 
 You can configure the plugins by modifying the source, as described in `SpectrumVisualizer.m`
 
