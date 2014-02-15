@@ -76,27 +76,34 @@ function Ret = Regenerate(Path)
                 RSpectrum = EnvelopeInterpolate(CVDB_Residual(iResidual, : ),
                                                 FFTSize / 2, 8);
                 
-                
                 #Pitch shifting
                 #XPeak *= 1;
                 
+                #Formant parameter mixing
                 R = i / RowNum;
                 PeakX = A_PeakX + D_PeakX * R;
                 PeakY = A_PeakY + D_PeakY * R;
                 ValleyX = A_ValleyX + D_ValleyX * R;
                 ValleyY = A_ValleyY + D_ValleyY * R;
                 
+                #Generate new envelope
                 NewEnv = ParabolaInterpolate(PeakX, PeakY, ValleyX, ValleyY,
                                              N, 300, - 12, FFTSize / 2);
-                Spectrum = (Spectrum(1 : FFTSize / 2) + 13) ./ ...
-                           (OrigEnv + 70) .* (NewEnv + 70) - 13;
-                RSpectrum = (RSpectrum + 8) ./ ...
-                            (OrigEnv + 70) .* (NewEnv + 70) - 8;
                 
-                #plot(NewEnv(1 : 300));
+                #Differential envelope
+                Spectrum = Spectrum(1 : FFTSize / 2) - OrigEnv / 20 * log(10);
+                RSpectrum = RSpectrum(1 : FFTSize / 2) ...
+                                - OrigEnv / 20 * log(10) * 0.3;
+                
+                #Additive parabola envelope
+                Spectrum += NewEnv / 20 * log(10);
+                RSpectrum += NewEnv / 20 * log(10) * 0.3;
+                
+                #plot(RSpectrum(1 : 300));
+                #axis([1, 300, - 10, 5]);
                 #sleep(0.1);
                 
-                #Envelop maintaining
+                #Envelope maintaining
                 for j = 1 : length(YPeak)
                         if(XPeak(j) < 5)
                                 break;
@@ -107,8 +114,8 @@ function Ret = Regenerate(Path)
                 #Dump back
                 CVDB_Sinusoid_Freq(i, : ) = XPeak / FFTSize * SampleRate;
                 CVDB_Sinusoid_Magn(i, : ) = YPeak;
-                #CVDB_Residual(iResidual, : ) = SpectralEnvelope( ...
-                #                                   RSpectrum, 8)(1 : 127);
+                CVDB_Residual(iResidual, : ) = SpectralEnvelope( ...
+                                                   RSpectrum, 8);
         end
         
         #----------------------------------------------------------------------
