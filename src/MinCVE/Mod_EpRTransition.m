@@ -18,12 +18,12 @@ for i = 2 : length(CVDB_Pulses)
 end
 
 #Loading
-load a_noslope.epr;
+load i_noslope.epr;
 A_Freq = Freq;
 A_BandWidth = BandWidth;
 A_Amp = Amp;
 
-load i_noslope.epr;
+load a_noslope.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
@@ -39,6 +39,10 @@ OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 10 .^ (A_Amp / 20), N);
 OrigEnv = log(OrigEnv) + log(4 / FFTSize);
 
 RowNum = rows(CVDB_Sinusoid_Magn);
+
+#Create copy
+CVDB_Residual2 = CVDB_Residual;
+
 for i = 1 : RowNum
         iResidual = fix(i / 2 + 1);
         #Avoid overflow.
@@ -51,7 +55,7 @@ for i = 1 : RowNum
         YPeak = CVDB_Sinusoid_Magn(i, : );
         Spectrum = PeakInterpolate(XPeak, YPeak, FFTSize, - 20) ...
                        (1 : FFTSize / 2);
-        RSpectrum = EnvelopeInterpolate(CVDB_Residual(iResidual, : ),
+        RSpectrum = EnvelopeInterpolate(CVDB_Residual2(iResidual, : ),
                                             FFTSize / 2, 8)(1 : FFTSize / 2);
 
         #Pitch shifting
@@ -69,7 +73,7 @@ for i = 1 : RowNum
 
         #plot(OrigEnv(1 : 300));
         #hold on
-        #plot(Spectrum);
+        #plot(RSpectrum);
         #axis([1, 300, - 13, 5]);
         #hold off
         #sleep(0.1);
@@ -81,7 +85,7 @@ for i = 1 : RowNum
         #Adding resonance envelope
         Spectrum += NewEnv;
         RSpectrum += NewEnv;
-
+        
         #Envelope maintaining
         for j = 1 : length(YPeak)
                 if(XPeak(j) < 5)
@@ -93,6 +97,6 @@ for i = 1 : RowNum
         #Dump back
         CVDB_Sinusoid_Freq(i, : ) = XPeak / FFTSize * SampleRate;
         CVDB_Sinusoid_Magn(i, : ) = YPeak;
-        #CVDB_Residual(iResidual, : ) = SpectralEnvelope(RSpectrum, 8);
+        CVDB_Residual(iResidual, : ) = SpectralEnvelope(RSpectrum, 8);
 end
 
