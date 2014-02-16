@@ -34,6 +34,9 @@ OrigEnv = ParabolaInterpolate(A_PeakX, A_PeakY, A_ValleyX, A_ValleyY,
                                 N, 300, - 12, FFTSize / 2);
 
 RowNum = rows(CVDB_Sinusoid_Magn);
+
+#Create copy
+CVDB_Residual2 = CVDB_Residual;
 for i = 1 : RowNum
         iResidual = fix(i / 2 + 1);
         #Avoid overflow.
@@ -45,7 +48,7 @@ for i = 1 : RowNum
         XPeak = CVDB_Sinusoid_Freq(i, : ) / SampleRate * FFTSize;
         YPeak = CVDB_Sinusoid_Magn(i, : );
         Spectrum = PeakInterpolate(XPeak, YPeak, FFTSize, - 20);
-        RSpectrum = EnvelopeInterpolate(CVDB_Residual(iResidual, : ),
+        RSpectrum = EnvelopeInterpolate(CVDB_Residual2(iResidual, : ),
                                                 FFTSize / 2, 8);
 
         #Pitch shifting
