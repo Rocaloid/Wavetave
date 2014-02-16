@@ -1,0 +1,27 @@
+# Created by Octave 3.8.0, Sun Feb 16 13:33:44 2014 CST <sleepwalking@sleepwalking-Latitude-E6230>
+# name: Freq
+# type: matrix
+# rows: 1
+# columns: 5
+ 0 659.608772830093 2349.555336796257 3195.331062541897 4602.817422084444
+
+
+# name: BandWidth
+# type: matrix
+# rows: 1
+# columns: 5
+ 300 400 350 500 400
+
+
+# name: Amp
+# type: matrix
+# rows: 1
+# columns: 5
+ 0 9.58565737051793 -4.37981407702523 -4.93492695883134 -0.084993359893757
+
+
+# name: N
+# type: scalar
+5
+
+

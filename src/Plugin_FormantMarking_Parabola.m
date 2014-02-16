@@ -6,6 +6,8 @@ function Plugin_FormantMarking_Parabola()
         global FFTSize;
         figure(2);
         hold on;
+        printf("Plugin_FormantMarking_Parabola\n");
+        fflush(stdout);
         
         PeakY = zeros(10, 1);
         PeakX = zeros(10, 1);

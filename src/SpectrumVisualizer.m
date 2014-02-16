@@ -1,3 +1,4 @@
+#! /usr/bin/env octave
 #  SpectrumVisualizer.m
 #    Displays waveform and spectrum figures;
 #    Interacts with user;
@@ -6,6 +7,7 @@
 clear;
 addpath("./");
 addpath("./Oct");
+addpath("./Util");
 
 Version = "0.3";
 
@@ -75,7 +77,7 @@ global Plugin_Spectrum = [
 #  The following variables specify the feature of the spectrum figure.
 FFTSize = 2048;
 SpectrumLowerRange = 0;
-SpectrumUpperRange = 7000;
+SpectrumUpperRange = 6000;
 DBLowerRange = - 70;
 DBUpperRange = 40;
 WindowFunc = @hanning;
@@ -89,6 +91,8 @@ Button_S = 115;
 Button_D = 100;
 Button_O = 111;
 Button_M = 109;
+Button_P = 112;
+Button_E = 101;
 
 #  Draws the time domain signal in the range of visible area.
 function UpdateView(Wave)
@@ -228,7 +232,16 @@ while(1)
                         eval(cstrcat(Plugin_Load(i, :), "(OrigWave);"));
                 end
         elseif(Button == Button_M)
-                Plugin_FormantMarking_Parabola();
+                printf("Formant Modeling Method:\n");
+                printf("     (P) Piecewise Parabola\n");
+                printf("     (E) EpR\n");
+                fflush(stdout);
+                [X, Y, Button] = ginput(1);
+                if(Button == Button_P)
+                        Plugin_FormantMarking_Parabola();
+                elseif(Button == Button_E)
+                        Plugin_FormantMarking_EpR(Spectrum);
+                end
         elseif(Button == Button_Exit)
                 break; #Exit
         end
