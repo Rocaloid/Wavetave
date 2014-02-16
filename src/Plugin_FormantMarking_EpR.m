@@ -35,10 +35,9 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Button_D = 100;
         Spectrum = Spectrum';
         
-        
         #Generate Slope
         Slope = ExpDecay(25, 90, - 1, FFTSize / 2);
-        Spectrum = Spectrum - Slope;
+        #Spectrum = Spectrum - Slope;
         
         NSelect = 1;
         while(1)
@@ -82,7 +81,9 @@ function Plugin_FormantMarking_EpR(Spectrum)
                         end
                 elseif(Button > 47 && Button < 58)
                         #Num Key
-                        NSelect = Button - 48 + 1;
+                        if(Button - 48 + 1 <= N)
+                                NSelect = Button - 48 + 1;
+                        end
                 elseif(Button == - 1)
                         #Save
                         save("Formant.epr", "Freq", "BandWidth", "Amp", "N");
@@ -96,11 +97,11 @@ end
 function Prompt(NSelect, Freq, BandWidth, Amp)
         clc;
         printf("Selected formant: %d\n", NSelect - 1);
-        printf("  Center Frequency: %dHz\n", fix(Freq(NSelect)));
-        printf("  BandWidth: %dHz\n", fix(BandWidth(NSelect)));
-        printf("  Amplitude: %.1fDB\n\n", fix(Amp(NSelect) * 10) / 10);
+        printf("  Central Frequency: %dHz\n", fix(Freq(NSelect)));
+        printf("  Band Width: %dHz\n", fix(BandWidth(NSelect)));
+        printf("  Relative Amplitude: %.1fDB\n\n", fix(Amp(NSelect) * 10) / 10);
         
-        printf("    (1 ~ 9) Select formant.\n");
+        printf("    (0 ~ 9) Select formant.\n");
         printf("  (L-Click) Change freq & amp.\n");
         printf("        (D) Increase band width.\n");
         printf("        (A) Decrease band width.\n");

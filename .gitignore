@@ -4,6 +4,7 @@ octave-workspace
 *.o
 *.cvdb
 *.fmt
+*.epr
 *.wav
 *.wsp
 *.xz
