@@ -66,11 +66,11 @@ global Plugin_Wave = [
 #    be useful in precise fundamental frequency detection.
 global Plugin_Spectrum = [
                 "Empty"
+                "Plugin_F0Marking"
                 "Plugin_F0Marking_ByPhase"
-        #       "Plugin_F0Marking"
         #       "Plugin_Freq2Pitch"
         #       "Plugin_HarmonicMarking"
-        #       "Plugin_HarmonicMarking_Naive"
+                "Plugin_HarmonicMarking_Naive"
         #       "Plugin_PhaseFigure"
         ];
 

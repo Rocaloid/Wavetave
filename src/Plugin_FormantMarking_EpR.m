@@ -6,6 +6,7 @@
 #    Bonada, Jordi, et al. "Singing voice synthesis combining excitation plus
 #    resonance and sinusoidal plus residual models." Proceedings of
 #    International Computer Music Conference. 2001.
+#  Depends on Plugin_F0Marking_ByPhase and Plugin_HarmonicMarking_Naive.
 
 function Plugin_FormantMarking_EpR(Spectrum)
         global FFTSize;
@@ -27,7 +28,7 @@ function Plugin_FormantMarking_EpR(Spectrum)
         N = 5;
         Freq      = [0   , 1200, 1800, 3300, 5000]; #Hz
         BandWidth = [300 , 400 , 300 , 700 , 500 ]; #Hz
-        Amp       = [0  ,  0.5 , -7  , - 10, - 10]; #DB
+        Amp       = [0   , 0.5 , -7  , - 10, - 10]; #DB
         
         Button_Up   = 1009;
         Button_Down = 1011;
@@ -35,9 +36,19 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Button_D = 100;
         Spectrum = Spectrum';
         
-        #Generate Slope
-        Slope = ExpDecay(25, 90, - 1, FFTSize / 2);
-        #Spectrum = Spectrum - Slope;
+        #Linear decay slope
+        global SpectrumUpperRange;
+        global Plugin_Var_Harmonics_Freq;
+        global Plugin_Var_Harmonics_Magn;
+        SpectrumUpperRange_ = SpectrumUpperRange;
+        SpectrumUpperRange  = 5000;
+        Plugin_HarmonicMarking_Naive(Spectrum);
+        SpectrumUpperRange  = SpectrumUpperRange_;
+        Coef = polyfit(Plugin_Var_Harmonics_Freq,
+                       Plugin_Var_Harmonics_Magn, 1)
+        
+        Slope = Coef(2) + (1 : length(Spectrum)) * Coef(1);
+        Spectrum = Spectrum - Slope;
         
         NSelect = 1;
         while(1)
@@ -74,11 +85,12 @@ function Plugin_FormantMarking_EpR(Spectrum)
                         Freq(NSelect) = X / FFTSize * SampleRate;
                         Amp(NSelect)  = Y;
                 elseif(Button == Button_D)
-                        BandWidth(NSelect) += 50;
+                        BandWidth(NSelect) *= 1.2;
                 elseif(Button == Button_A)
-                        if(BandWidth(NSelect) > 50)
-                                BandWidth(NSelect) -= 50;
-                        end
+                        BandWidth(NSelect) /= 1.2;
+                        #if(BandWidth(NSelect) > 50)
+                        #        BandWidth(NSelect) -= 50;
+                        #end
                 elseif(Button > 47 && Button < 58)
                         #Num Key
                         if(Button - 48 + 1 <= N)
@@ -86,7 +98,9 @@ function Plugin_FormantMarking_EpR(Spectrum)
                         end
                 elseif(Button == - 1)
                         #Save
-                        save("Formant.epr", "Freq", "BandWidth", "Amp", "N");
+                        save("Formant.epr", "Freq", "BandWidth",
+                             "Amp", "Coef", "N");
+	                print(strcat("/tmp/EpR/", "Filter.jpg"));
                         printf("Saved to Formant.epr.\n");
                         break;
                 end
@@ -99,7 +113,8 @@ function Prompt(NSelect, Freq, BandWidth, Amp)
         printf("Selected formant: %d\n", NSelect - 1);
         printf("  Central Frequency: %dHz\n", fix(Freq(NSelect)));
         printf("  Band Width: %dHz\n", fix(BandWidth(NSelect)));
-        printf("  Relative Amplitude: %.1fDB\n\n", fix(Amp(NSelect) * 10) / 10);
+        printf("  Relative Amplitude: %.1fDB\n\n",
+            fix(Amp(NSelect) * 10) / 10);
         
         printf("    (0 ~ 9) Select formant.\n");
         printf("  (L-Click) Change freq & amp.\n");

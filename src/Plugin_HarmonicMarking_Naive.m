@@ -19,15 +19,16 @@ function Plugin_HarmonicMarking_Naive(Spectrum, Phase, Wave)
         Plugin_Var_Harmonics_Freq = 0;
         Plugin_Var_Harmonics_Magn = 0;
         
-        #F0
-        PinX = Plugin_Var_F0_Exact * FFTSize / SampleRate;
-        [PinY, X] = max(Spectrum(fix(PinX) - 3 : fix(PinX) + 3));
-        X += fix(PinX) - 4;
-        Plugin_Var_Harmonics_Freq(1) = X;
-        Plugin_Var_Harmonics_Magn(1) = PinY;
-        
         #If the data is valid
         if(Plugin_Var_F0_Exact > 50)
+        
+                #F0
+                PinX = Plugin_Var_F0_Exact * FFTSize / SampleRate;
+                [PinY, X] = max(Spectrum(fix(PinX) - 3 : fix(PinX) + 3));
+                X += fix(PinX) - 4;
+                Plugin_Var_Harmonics_Freq(1) = X;
+                Plugin_Var_Harmonics_Magn(1) = PinY;
+        
                 for i = 2 : fix(SpectrumUpperRange / Plugin_Var_F0_Exact)
                         #Finding maximum
                         PinX = Plugin_Var_F0_Exact * FFTSize / SampleRate * i;

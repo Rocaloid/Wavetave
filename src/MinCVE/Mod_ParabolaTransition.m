@@ -19,7 +19,7 @@ A_PeakY = PeakY;
 A_ValleyX = ValleyX;
 A_ValleyY = ValleyY;
 
-load a.fmt;
+load e.fmt;
 B_PeakX = PeakX;
 B_PeakY = PeakY;
 B_ValleyX = ValleyX;

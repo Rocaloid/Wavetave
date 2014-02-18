@@ -17,3 +17,14 @@ function Ret = EpR_CumulateResonance(Freq, BandWidth, Amp, N)
         end
 end
 
+# My improved KlattFilter.
+function Ret = DecayFilter(Freq, BandWidth, Amp, Decay, SampleRate, FFTSize)
+        Ret = KlattFilter(Freq, BandWidth, Amp, SampleRate, FFTSize);
+        Center = fix(Freq / SampleRate * FFTSize) + 1;
+        Ret = log(Ret);
+        Ret(1 : Center) -= (Center - (1 : Center)) / 50 * Decay;
+        Ret(Center : FFTSize / 2) -= ((Center : FFTSize / 2) - Center) ...
+                                   / 50 * Decay;
+        Ret = e .^ Ret;
+end
+

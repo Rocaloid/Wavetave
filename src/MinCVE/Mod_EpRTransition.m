@@ -18,25 +18,27 @@ for i = 2 : length(CVDB_Pulses)
 end
 
 #Loading
-load i_noslope.epr;
+load a1_linear.epr;
 A_Freq = Freq;
 A_BandWidth = BandWidth;
 A_Amp = Amp;
+A_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
+A_Slope = log(10 .^ (A_Slope / 20)) + log(4 / FFTSize);
 
-load a_noslope.epr;
+load i1_linear.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
+B_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
+B_Slope = log(10 .^ (B_Slope / 20)) + log(4 / FFTSize);
 
 D_Freq = B_Freq - A_Freq;
 D_BandWidth = B_BandWidth - A_BandWidth;
 D_Amp = B_Amp - A_Amp;
+D_Slope = B_Slope - A_Slope;
 
-Slope = ExpDecay(DecibelToIFFTLn(25),
-                 DecibelToIFFTLn(90),
-                 - 1, FFTSize / 2);
 OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 10 .^ (A_Amp / 20), N);
-OrigEnv = log(OrigEnv) + log(4 / FFTSize);
+OrigEnv = log(OrigEnv);
 
 RowNum = rows(CVDB_Sinusoid_Magn);
 
@@ -54,7 +56,7 @@ for i = 1 : RowNum
         XPeak = CVDB_Sinusoid_Freq(i, : ) / SampleRate * FFTSize;
         YPeak = CVDB_Sinusoid_Magn(i, : );
         Spectrum = PeakInterpolate(XPeak, YPeak, FFTSize, - 20) ...
-                       (1 : FFTSize / 2);
+                       (1 : FFTSize / 2) - A_Slope;
         RSpectrum = EnvelopeInterpolate(CVDB_Residual2(iResidual, : ),
                                             FFTSize / 2, 8)(1 : FFTSize / 2);
 
@@ -66,25 +68,33 @@ for i = 1 : RowNum
         Freq = A_Freq + D_Freq * R;
         BandWidth = A_BandWidth + D_BandWidth * R;
         Amp = A_Amp + D_Amp * R;
+        Slope = A_Slope + D_Slope * R;
 
         #Generate new envelope
         NewEnv = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
-        NewEnv = log(NewEnv) + log(4 / FFTSize);
+        NewEnv = log(NewEnv);
 
-        #plot(OrigEnv(1 : 300));
+        #plot(OrigEnv(1 : 300) + Slope(1 : 300), 'b');
         #hold on
-        #plot(RSpectrum);
-        #axis([1, 300, - 13, 5]);
-        #hold off
-        #sleep(0.1);
-
+        #plot(Spectrum(1 : 300), 'r');
+        
         #Residual envelope
-        Spectrum = Spectrum - OrigEnv;
-        RSpectrum = RSpectrum - OrigEnv;
+        HRes = Spectrum - OrigEnv;
+        RRes = RSpectrum - OrigEnv;
 
         #Adding resonance envelope
-        Spectrum += NewEnv;
-        RSpectrum += NewEnv;
+        Spectrum  = HRes + NewEnv;
+        RSpectrum = RRes + NewEnv;
+        
+        #plot(Spectrum(1 : 300), 'b');
+        #plot(NewEnv(1 : 300), 'r');
+        #plot(HRes(1 : 300), 'g');
+        
+        #axis([1, 300, - 5, 5]);
+        #hold off
+        #sleep(0.1);
+        
+        Spectrum += Slope;
         
         #Envelope maintaining
         for j = 1 : length(YPeak)
