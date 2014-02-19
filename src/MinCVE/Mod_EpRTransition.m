@@ -18,14 +18,14 @@ for i = 2 : length(CVDB_Pulses)
 end
 
 #Loading
-load a1_linear.epr;
+load Data/e1_preemph.epr;
 A_Freq = Freq;
 A_BandWidth = BandWidth;
 A_Amp = Amp;
 A_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
 A_Slope = log(10 .^ (A_Slope / 20)) + log(4 / FFTSize);
 
-load i1_linear.epr;
+load Data/a1_preemph.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
@@ -73,26 +73,35 @@ for i = 1 : RowNum
         #Generate new envelope
         NewEnv = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
         NewEnv = log(NewEnv);
-
-        #plot(OrigEnv(1 : 300) + Slope(1 : 300), 'b');
-        #hold on
-        #plot(Spectrum(1 : 300), 'r');
+        
+        if(1)
+        plot(OrigEnv(1 : 300), 'b');
+        hold on
+        plot(Spectrum(1 : 300), 'b');
+        end
         
         #Residual envelope
         HRes = Spectrum - OrigEnv;
         RRes = RSpectrum - OrigEnv;
-
+        
+        HDif = NewEnv - OrigEnv;
+        HPositiveRes = max(HRes, 0);
+        HDif = max(0, min(HDif, HPositiveRes));
+        HRes -= HDif;
+        
         #Adding resonance envelope
         Spectrum  = HRes + NewEnv;
         RSpectrum = RRes + NewEnv;
         
-        #plot(Spectrum(1 : 300), 'b');
-        #plot(NewEnv(1 : 300), 'r');
-        #plot(HRes(1 : 300), 'g');
+        if(1)
+        plot(Spectrum(1 : 300), 'r');
+        plot(NewEnv(1 : 300), 'r');
+        plot(HRes(1 : 300), 'g');
         
-        #axis([1, 300, - 5, 5]);
-        #hold off
-        #sleep(0.1);
+        axis([1, 300, - 5, 5]);
+        hold off
+        sleep(0.1);
+        end
         
         Spectrum += Slope;
         

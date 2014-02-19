@@ -20,7 +20,7 @@ void Zeropad(NDArray* Dest, NDArray* Src, int WinSize, int FFTSize)
         Dest[0](FFTSize - WinSize / 2 + i) = Src[0](i);
 }
 
-//[CFrames, WinFactor] = STFTAnalysis(Wave, Window, FFTSize, HopSize);
+//CFrames = STFTAnalysis(Wave, Window, FFTSize, HopSize);
 DEFUN_DLD (STFTAnalysis, args, nargout, "")
 {
     NDArray Wave = args(0).array_value();

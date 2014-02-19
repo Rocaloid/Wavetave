@@ -2,7 +2,7 @@
 #    Regenerates wave from CVDB.
 #    Depends on various Plugins and Octs.
 
-function Ret = Regenerate(Path)
+function Regenerate(Path)
         addpath("../");
         addpath("../Oct");
         addpath("../Util");
@@ -21,7 +21,7 @@ function Ret = Regenerate(Path)
         Window = hanning(FFTSize);
         Environment = "Procedure";
         
-        load(strcat(Path, ".cvdb"));
+        load(strcat("Data/", Path, ".cvdb"));
         CVDBUnwrap;
         
         [PSOLAMatrix, PSOLAWinHalf] = PSOLAExtraction(CVDB_Wave, CVDB_Pulses);
@@ -125,9 +125,9 @@ function Ret = Regenerate(Path)
         Ret(CenterPos : CenterPos + 255) .*=  (1 : 256) / 256;
         Ret(1 : CenterPos + 255) += T(1 : CenterPos + 255)';
         
-        wavwrite(T, 44100, 'PSOLA.wav');
-        wavwrite(Ret, 44100, 'sinusoidal.wav');
-        wavwrite(Sto, 44100, 'residual.wav');
-        wavwrite(Sto + Ret, 44100, strcat(Path, ".wav"));
+        #wavwrite(T, 44100, 'PSOLA.wav');
+        #wavwrite(Ret, 44100, 'sinusoidal.wav');
+        #wavwrite(Sto, 44100, 'residual.wav');
+        wavwrite(Sto + Ret, 44100, "Regen.wav");
 end
 

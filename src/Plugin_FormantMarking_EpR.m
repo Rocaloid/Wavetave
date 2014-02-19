@@ -36,6 +36,11 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Button_D = 100;
         Spectrum = Spectrum';
         
+        #Normalize
+        #Strength = sum(10 .^ (Spectrum(1 : 100) / 20));
+        #Factor = 100 / Strength;
+        #Spectrum *= Factor;
+        
         #Linear decay slope
         global SpectrumUpperRange;
         global Plugin_Var_Harmonics_Freq;
@@ -45,7 +50,11 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Plugin_HarmonicMarking_Naive(Spectrum);
         SpectrumUpperRange  = SpectrumUpperRange_;
         Coef = polyfit(Plugin_Var_Harmonics_Freq,
-                       Plugin_Var_Harmonics_Magn, 1)
+                       Plugin_Var_Harmonics_Magn, 1);
+        
+        #Eliminate the gain.
+        Coef(1) = - 0.1;
+        Coef(2) = 0;
         
         Slope = Coef(2) + (1 : length(Spectrum)) * Coef(1);
         Spectrum = Spectrum - Slope;
