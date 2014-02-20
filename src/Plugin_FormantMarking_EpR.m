@@ -6,12 +6,19 @@
 #    Bonada, Jordi, et al. "Singing voice synthesis combining excitation plus
 #    resonance and sinusoidal plus residual models." Proceedings of
 #    International Computer Music Conference. 2001.
-#  Depends on Plugin_F0Marking_ByPhase and Plugin_HarmonicMarking_Naive.
+#
+#  Depends on KlattFilter, Plugin_F0Marking_ByPhase and
+#    Plugin_HarmonicMarking_Naive.
 
 function Plugin_FormantMarking_EpR(Spectrum)
         global FFTSize;
         global SampleRate;
-        figure(2);
+        global Environment;
+        
+        #This plugin is also used by MinCVE/EpRFit.
+        if(strcmp(Environment, "Visual"))
+                figure(2);
+        end
         
         #Spectrum display range.
         global SpectrumLowerRange;
@@ -21,14 +28,20 @@ function Plugin_FormantMarking_EpR(Spectrum)
         LBound = fix(FFTSize / SampleRate * SpectrumLowerRange);
         UBound = fix(FFTSize / SampleRate * SpectrumUpperRange);
         
+        #Shared parameters.
+        global Plugin_Var_EpR_N;
+        global Plugin_Var_EpR_Freq;
+        global Plugin_Var_EpR_BandWidth;
+        global Plugin_Var_EpR_Amp;
+        
         printf("Plugin_FormantMarking_EpR\n");
         fflush(stdout);
         
         #Initialization
-        N = 5;
-        Freq      = [0   , 1200, 1800, 3300, 5000]; #Hz
-        BandWidth = [300 , 400 , 300 , 700 , 500 ]; #Hz
-        Amp       = [0   , 0.5 , -7  , - 10, - 10]; #DB
+        N = Plugin_Var_EpR_N;
+        Freq = Plugin_Var_EpR_Freq;
+        BandWidth = Plugin_Var_EpR_BandWidth;
+        Amp = Plugin_Var_EpR_Amp;
         
         Button_Up   = 1009;
         Button_Down = 1011;
@@ -36,26 +49,25 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Button_D = 100;
         Spectrum = Spectrum';
         
-        #Normalize
+        #Normalize (disabled)
         #Strength = sum(10 .^ (Spectrum(1 : 100) / 20));
         #Factor = 100 / Strength;
         #Spectrum *= Factor;
         
-        #Linear decay slope
-        global SpectrumUpperRange;
-        global Plugin_Var_Harmonics_Freq;
-        global Plugin_Var_Harmonics_Magn;
-        SpectrumUpperRange_ = SpectrumUpperRange;
-        SpectrumUpperRange  = 5000;
-        Plugin_HarmonicMarking_Naive(Spectrum);
-        SpectrumUpperRange  = SpectrumUpperRange_;
-        Coef = polyfit(Plugin_Var_Harmonics_Freq,
-                       Plugin_Var_Harmonics_Magn, 1);
+        #Linear decay slope (disabled)
+        #global SpectrumUpperRange;
+        #global Plugin_Var_Harmonics_Freq;
+        #global Plugin_Var_Harmonics_Magn;
+        #SpectrumUpperRange_ = SpectrumUpperRange;
+        #SpectrumUpperRange  = 5000;
+        #Plugin_HarmonicMarking_Naive(Spectrum);
+        #SpectrumUpperRange  = SpectrumUpperRange_;
+        #Coef = polyfit(Plugin_Var_Harmonics_Freq,
+        #               Plugin_Var_Harmonics_Magn, 1);
         
-        #Eliminate the gain.
+        #Pre-emphasis slope (0.1DB/bin for fft-2048).
         Coef(1) = - 0.1;
         Coef(2) = 0;
-        
         Slope = Coef(2) + (1 : length(Spectrum)) * Coef(1);
         Spectrum = Spectrum - Slope;
         
@@ -107,18 +119,29 @@ function Plugin_FormantMarking_EpR(Spectrum)
                         end
                 elseif(Button == - 1)
                         #Save
-                        save("Formant.epr", "Freq", "BandWidth",
-                             "Amp", "Coef", "N");
-	                print(strcat("/tmp/EpR/", "Filter.jpg"));
-                        printf("Saved to Formant.epr.\n");
+                        if(strcmp(Environment, "Visual"))
+                                save("Formant.epr", "Freq", "BandWidth",
+                                     "Amp", "Coef", "N");
+	                        print(strcat("/tmp/EpR/", "Filter.jpg"));
+                                printf("Saved to Formant.epr.\n");
+                        end
                         break;
                 end
         end
-        figure(1);
+        #This plugin is also used by MinCVE/EpRFit.
+        if(strcmp(Environment, "Visual"))
+                figure(1);
+        end
+        
+        #Dump back
+        Plugin_Var_EpR_N = N;
+        Plugin_Var_EpR_Freq = Freq;
+        Plugin_Var_EpR_BandWidth = BandWidth;
+        Plugin_Var_EpR_Amp = Amp;
 end
 
 function Prompt(NSelect, Freq, BandWidth, Amp)
-        clc;
+        #clc;
         printf("Selected formant: %d\n", NSelect - 1);
         printf("  Central Frequency: %dHz\n", fix(Freq(NSelect)));
         printf("  Band Width: %dHz\n", fix(BandWidth(NSelect)));

@@ -9,7 +9,7 @@ addpath("./");
 addpath("./Oct");
 addpath("./Util");
 
-Version = "0.3";
+Version = "0.31";
 
 global FFTSize;
 global SampleRate;
@@ -37,6 +37,7 @@ end
 #  Wave: an array of the whole loaded signal.
 global Plugin_Load = [
                 "Empty"
+                "Plugin_Load_EpRInitialization"
         #       "Plugin_Load_PulseMarking"
         #       "Plugin_Load_PulseMarking_Stable"
         #       "Plugin_Load_PulseMarking_Naive"
@@ -121,16 +122,6 @@ function UpdateView(Wave)
         end
 end
 
-#  Calulates the decibel magnitude and phase spectrum from time domain signals.
-function [Ret, RetPhase] = GenerateSpectrum(Wave)
-        global FFTSize;
-        global Window;
-        X = fft(fftshift(Wave .* Window));
-        Ret = abs(X)(1 : FFTSize / 2);
-        Ret = log10(Ret + 0.000001) * 20;
-        RetPhase = arg(X);
-end
-
 #  Returns the spectrum and waveform in the range of FFT area.
 function [Ret, RetPhase, RetWave, ExtWave] = UpdateSpectrum(Wave)
         global ViewPos;
@@ -174,11 +165,6 @@ Window = WindowFunc(FFTSize);
 ViewPos = fix(Length / 2);
 ViewWidth = ViewPos;
 WaveToOpen = "";
-
-clf;
-figure(1);
-plot(OrigWave);
-UpdateView(OrigWave);
 
 printf(cstrcat("Spectrum Visualizer ", Version, "\n"));
 printf("W - Scale in,     S - Scale out.\n");

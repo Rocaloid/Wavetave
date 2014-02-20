@@ -18,19 +18,22 @@ for i = 2 : length(CVDB_Pulses)
 end
 
 #Loading
-load Data/e1_preemph.epr;
+load Data/a1_preemph.epr;
 A_Freq = Freq;
 A_BandWidth = BandWidth;
 A_Amp = Amp;
 A_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
 A_Slope = log(10 .^ (A_Slope / 20)) + log(4 / FFTSize);
 
-load Data/a1_preemph.epr;
+load Data/i1_preemph.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
 B_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
 B_Slope = log(10 .^ (B_Slope / 20)) + log(4 / FFTSize);
+
+#Variative EpR
+load Data/a1.vepr;
 
 D_Freq = B_Freq - A_Freq;
 D_BandWidth = B_BandWidth - A_BandWidth;
@@ -51,6 +54,24 @@ for i = 1 : RowNum
         if(iResidual > rows(CVDB_Residual))
                 iResidual = rows(CVDB_Residual);
         end
+        
+        #Variative EpR
+        Vi = i / 4 + 1;
+        if(Vi > rows(EpR_Freq) - 1)
+                Vi = rows(EpR_Freq) - 1;
+        end
+        Vi1 = fix(Vi);
+        Vi2 = fix(Vi) + 1;
+        V = mod(Vi, 1);
+        U = 1 - V;
+        A_Freq      = EpR_Freq(Vi1, : ) * U + EpR_Freq(Vi2, : ) * V;
+        A_BandWidth = EpR_BandWidth(Vi1, : ) * U ...
+                       + EpR_BandWidth(Vi2, : ) * V;
+        A_Amp       = EpR_Amp(Vi1, : ) * U + EpR_Amp(Vi2, : ) * V;
+        
+        OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 
+                                        10 .^ (A_Amp / 20), N);
+        OrigEnv = log(OrigEnv);
 
         #Envelope generation
         XPeak = CVDB_Sinusoid_Freq(i, : ) / SampleRate * FFTSize;

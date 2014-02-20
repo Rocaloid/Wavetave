@@ -157,6 +157,9 @@ function Ret = GenCVDB(Path, Name)
         CVDB_Pulses = Plugin_Var_Pulses;
         CVDB_VOTIndex = length(FrontPulses);
         
+        CVDB_SourceLink = Path;
+        CVDB_SourceOffset = Plugin_Var_Unvoiced;
+        
         #Pre-Compression disabled.
         
         #First compression
@@ -183,7 +186,9 @@ function Ret = GenCVDB(Path, Name)
                 "CVDB_Sinusoid_Freq", ...
                 "CVDB_Sinusoid_Magn", ...
                 "CVDB_Residual", ...
-                "CVDB_Pulses")
+                "CVDB_Pulses", ...
+                "CVDB_SourceLink", ...
+                "CVDB_SourceOffset")
 end
 
 function Ret = Difference1D(Array)

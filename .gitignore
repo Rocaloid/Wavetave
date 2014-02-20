@@ -5,8 +5,10 @@ octave-workspace
 *.cvdb
 *.fmt
 *.epr
+*.vepr
 *.wav
 *.wsp
+*.wpp
 *.xz
 *.zip
 *.7z
