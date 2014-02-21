@@ -56,18 +56,15 @@ for i = 1 : RowNum
         end
         
         #Variative EpR
-        Vi = i / 4 + 1;
-        if(Vi > rows(EpR_Freq) - 1)
-                Vi = rows(EpR_Freq) - 1;
-        end
-        Vi1 = fix(Vi);
-        Vi2 = fix(Vi) + 1;
-        V = mod(Vi, 1);
-        U = 1 - V;
-        A_Freq      = EpR_Freq(Vi1, : ) * U + EpR_Freq(Vi2, : ) * V;
-        A_BandWidth = EpR_BandWidth(Vi1, : ) * U ...
-                       + EpR_BandWidth(Vi2, : ) * V;
-        A_Amp       = EpR_Amp(Vi1, : ) * U + EpR_Amp(Vi2, : ) * V;
+        
+        [A_Freq, A_BandWidth, A_Amp] = ...
+            EpRIndexer(EpR_Freq, EpR_BandWidth, EpR_Amp, i);
+        
+        D_Freq = B_Freq - A_Freq;
+        D_BandWidth = B_BandWidth - A_BandWidth;
+        D_Amp = B_Amp - A_Amp;
+        D_Slope = B_Slope - A_Slope;
+
         
         OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 
                                         10 .^ (A_Amp / 20), N);
@@ -95,10 +92,10 @@ for i = 1 : RowNum
         NewEnv = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
         NewEnv = log(NewEnv);
         
-        if(1)
+        if(0)
         plot(OrigEnv(1 : 300), 'b');
         hold on
-        plot(Spectrum(1 : 300), 'b');
+        #plot(Spectrum(1 : 300), 'r');
         end
         
         #Residual envelope
@@ -110,7 +107,7 @@ for i = 1 : RowNum
         Anchor2 = [1, Freq  , Freq(N) + 300  ];
         Anchor1 *= FFTSize / SampleRate;
         Anchor2 *= FFTSize / SampleRate;
-        HRes = MapStretch(HRes, Anchor1, Anchor2);
+        #HRes = MapStretch(HRes, Anchor1, Anchor2);
         
         HDif = NewEnv - OrigEnv;
         HPositiveRes = max(HRes, 0);
@@ -121,10 +118,10 @@ for i = 1 : RowNum
         Spectrum  = HRes + NewEnv;
         RSpectrum = RRes + NewEnv;
         
-        if(1)
-        plot(Spectrum(1 : 300), 'r');
-        plot(NewEnv(1 : 300), 'r');
-        plot(HRes(1 : 300), 'g');
+        if(0)
+        plot(Spectrum(1 : 300), 'k');
+        #plot(NewEnv(1 : 300), 'k');
+        #plot(HRes(1 : 300), 'g');
         
         axis([1, 300, - 5, 5]);
         hold off
