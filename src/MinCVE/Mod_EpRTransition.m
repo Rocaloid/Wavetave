@@ -105,6 +105,13 @@ for i = 1 : RowNum
         HRes = Spectrum - OrigEnv;
         RRes = RSpectrum - OrigEnv;
         
+        #Compress & Stretch Residual envelope
+        Anchor1 = [1, A_Freq, A_Freq(N) + 300];
+        Anchor2 = [1, Freq  , Freq(N) + 300  ];
+        Anchor1 *= FFTSize / SampleRate;
+        Anchor2 *= FFTSize / SampleRate;
+        HRes = MapStretch(HRes, Anchor1, Anchor2);
+        
         HDif = NewEnv - OrigEnv;
         HPositiveRes = max(HRes, 0);
         HDif = max(0, min(HDif, HPositiveRes));
