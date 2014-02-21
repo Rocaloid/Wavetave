@@ -15,6 +15,8 @@ The aim of Wavetave is to test and design algorithms for Rocaloid.
 
 * Bonada, Jordi, et al. "Singing voice synthesis combining excitation plus resonance and sinusoidal plus residual models." Proceedings of International Computer Music Conference. 2001.
 
+* Sanjaume, Jordi Bonada. Voice processing and synthesis by performance sampling and spectral models. Diss. Universitat Pompeu Fabra, 2008.
+
 ---
 
 The main component of Wavetave is a Spectrum Visualizer, located at `src/SpectrumVisualizer.m`
