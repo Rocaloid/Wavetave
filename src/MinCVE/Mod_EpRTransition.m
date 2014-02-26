@@ -18,14 +18,14 @@ for i = 2 : length(CVDB_Pulses)
 end
 
 #Loading
-load Data/a1_preemph.epr;
+load Data/e1_preemph.epr;
 A_Freq = Freq;
 A_BandWidth = BandWidth;
 A_Amp = Amp;
 A_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
 A_Slope = log(10 .^ (A_Slope / 20)) + log(4 / FFTSize);
 
-load Data/i1_preemph.epr;
+load Data/_en0_preemph.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
@@ -33,7 +33,7 @@ B_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
 B_Slope = log(10 .^ (B_Slope / 20)) + log(4 / FFTSize);
 
 #Variative EpR
-load Data/a1.vepr;
+load Data/e1.vepr;
 
 D_Freq = B_Freq - A_Freq;
 D_BandWidth = B_BandWidth - A_BandWidth;
@@ -56,7 +56,6 @@ for i = 1 : RowNum
         end
         
         #Variative EpR
-        
         [A_Freq, A_BandWidth, A_Amp] = ...
             EpRIndexer(EpR_Freq, EpR_BandWidth, EpR_Amp, i);
         
@@ -64,7 +63,6 @@ for i = 1 : RowNum
         D_BandWidth = B_BandWidth - A_BandWidth;
         D_Amp = B_Amp - A_Amp;
         D_Slope = B_Slope - A_Slope;
-
         
         OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 
                                         10 .^ (A_Amp / 20), N);
@@ -79,7 +77,7 @@ for i = 1 : RowNum
                                             FFTSize / 2, 8)(1 : FFTSize / 2);
 
         #Pitch shifting
-        #XPeak *= 1;
+        XPeak *= 1;
 
         #Formant parameter mixing
         R = i / RowNum;
@@ -95,7 +93,7 @@ for i = 1 : RowNum
         if(0)
         plot(OrigEnv(1 : 300), 'b');
         hold on
-        #plot(Spectrum(1 : 300), 'r');
+        plot(Spectrum(1 : 300), 'b');
         end
         
         #Residual envelope
@@ -103,16 +101,19 @@ for i = 1 : RowNum
         RRes = RSpectrum - OrigEnv;
         
         #Compress & Stretch Residual envelope
-        Anchor1 = [1, A_Freq, A_Freq(N) + 300];
-        Anchor2 = [1, Freq  , Freq(N) + 300  ];
+        Anchor1 = [1, A_Freq, A_Freq(N) + 300, SampleRate / 2];
+        Anchor2 = [1, Freq  , Freq(N) + 300  , SampleRate / 2];
         Anchor1 *= FFTSize / SampleRate;
         Anchor2 *= FFTSize / SampleRate;
-        #HRes = MapStretch(HRes, Anchor1, Anchor2);
         
-        HDif = NewEnv - OrigEnv;
-        HPositiveRes = max(HRes, 0);
-        HDif = max(0, min(HDif, HPositiveRes));
-        HRes -= HDif;
+        #HDif = NewEnv - OrigEnv;
+        #HPositiveRes = max(HRes, 0);
+        #HDif = max(0, min(HDif, HPositiveRes));
+        #HRes -= HDif;
+        
+        HRes = MapStretch(HRes, Anchor1, Anchor2);
+        
+        #HRes *= (1 - R);
         
         #Adding resonance envelope
         Spectrum  = HRes + NewEnv;
@@ -120,8 +121,8 @@ for i = 1 : RowNum
         
         if(0)
         plot(Spectrum(1 : 300), 'k');
-        #plot(NewEnv(1 : 300), 'k');
-        #plot(HRes(1 : 300), 'g');
+        plot(NewEnv(1 : 300), 'k');
+        plot(HRes(1 : 300), 'g');
         
         axis([1, 300, - 5, 5]);
         hold off
@@ -129,6 +130,7 @@ for i = 1 : RowNum
         end
         
         Spectrum += Slope;
+        
         
         #Envelope maintaining
         for j = 1 : length(YPeak)

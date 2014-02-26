@@ -121,9 +121,9 @@ function EpRFit(Name)
         end
 
         EpR_N(c) = N;
-        EpR_Freq(c, : ) = Freq;
-        EpR_BandWidth(c, : ) = BandWidth;
-        EpR_Amp(c, : ) = Amp;
+        EpR_Freq(c, : ) = Plugin_Var_EpR_Freq;
+        EpR_BandWidth(c, : ) = Plugin_Var_EpR_BandWidth;
+        EpR_Amp(c, : ) = Plugin_Var_EpR_Amp;
 
         end
         

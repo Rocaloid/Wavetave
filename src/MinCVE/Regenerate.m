@@ -118,16 +118,16 @@ function Regenerate(Path)
         
         #Turbulent Noise reconstruction.
         Sto = GenTurbulentNoise(Ret, Sto, CVDB_Pulses(CVDB_VOTIndex));
-        Sto *= 0.6;
+        Sto *= 0.8;
         
         #Fade Out
         T(CenterPos : CenterPos + 255) .*= 1 - (1 : 256)' / 256;
         Ret(CenterPos : CenterPos + 255) .*=  (1 : 256) / 256;
         Ret(1 : CenterPos + 255) += T(1 : CenterPos + 255)';
         
-        #wavwrite(T, 44100, 'PSOLA.wav');
+        wavwrite(T, 44100, 'PSOLA.wav');
         wavwrite(Ret, 44100, 'sinusoidal.wav');
-        #wavwrite(Sto, 44100, 'residual.wav');
+        wavwrite(Sto, 44100, 'residual.wav');
         wavwrite(Sto + Ret, 44100, "Regen.wav");
 end
 
