@@ -126,8 +126,8 @@ function Regenerate(Path)
         Ret(1 : CenterPos + 255) += T(1 : CenterPos + 255)';
         
         wavwrite(T, 44100, 'PSOLA.wav');
-        wavwrite(Ret, 44100, 'sinusoidal.wav');
-        wavwrite(Sto, 44100, 'residual.wav');
-        wavwrite(Sto + Ret, 44100, "Regen.wav");
+        wavwrite(Ret', 44100, 'sinusoidal.wav');
+        wavwrite(Sto', 44100, 'residual.wav');
+        wavwrite((Sto + Ret)', 44100, "Regen.wav");
 end
 

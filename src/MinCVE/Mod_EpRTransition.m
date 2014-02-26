@@ -25,7 +25,7 @@ A_Amp = Amp;
 A_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
 A_Slope = log(10 .^ (A_Slope / 20)) + log(4 / FFTSize);
 
-load Data/_en0_preemph.epr;
+load Data/a1_preemph.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
@@ -112,6 +112,7 @@ for i = 1 : RowNum
         #HRes -= HDif;
         
         HRes = MapStretch(HRes, Anchor1, Anchor2);
+        RRes = MapStretch(RRes, Anchor1, Anchor2);
         
         #HRes *= (1 - R);
         
