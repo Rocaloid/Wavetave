@@ -23,22 +23,37 @@ A_Freq = Freq;
 A_BandWidth = BandWidth;
 A_Amp = Amp;
 A_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
-A_Slope = log(10 .^ (A_Slope / 20)) + log(4 / FFTSize);
+A_Slope = DecibelToIFFTLn(A_Slope);
+#A_ANT1.Freq = (A_Freq(1) + A_Freq(2)) / 2;
+#A_ANT2.Freq = (A_Freq(2) + A_Freq(3)) / 2;
+#A_ANT1.Amp = 0;
+#A_ANT2.Amp = 0;
+#A_ANT1.BandWidth = 0;
+#A_ANT2.BandWidth = 0;
+A_ANT1 = ANT1;
+A_ANT2 = ANT2;
+A_ANT1.Amp = ANT1.Amp / 20 * log(10);
+A_ANT2.Amp = ANT2.Amp / 20 * log(10);
 
-load Data/a1_preemph.epr;
+load Data/_en1_preemph.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
 B_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
-B_Slope = log(10 .^ (B_Slope / 20)) + log(4 / FFTSize);
+B_Slope = DecibelToIFFTLn(B_Slope);
+B_ANT1 = ANT1;
+B_ANT2 = ANT2;
+#B_ANT1.Freq = (B_Freq(1) + B_Freq(2)) / 2;
+#B_ANT2.Freq = (B_Freq(2) + B_Freq(3)) / 2;
+#B_ANT1.Amp = 0;
+#B_ANT2.Amp = 0;
+#B_ANT1.BandWidth = 0;
+#B_ANT2.BandWidth = 0;
+B_ANT1.Amp = B_ANT1.Amp / 20 * log(10);
+B_ANT2.Amp = B_ANT2.Amp / 20 * log(10);
 
 #Variative EpR
 load Data/e1.vepr;
-
-D_Freq = B_Freq - A_Freq;
-D_BandWidth = B_BandWidth - A_BandWidth;
-D_Amp = B_Amp - A_Amp;
-D_Slope = B_Slope - A_Slope;
 
 OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 10 .^ (A_Amp / 20), N);
 OrigEnv = log(OrigEnv);
@@ -66,6 +81,18 @@ for i = 1 : RowNum
         
         OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 
                                         10 .^ (A_Amp / 20), N);
+        
+        #Anti-resonance reconstruction.
+        ANT1 = A_ANT1;
+        ANT2 = A_ANT2;
+        KAmp1 = GetANTLinearAmp(ANT1, OrigEnv);
+        KAmp2 = GetANTLinearAmp(ANT2, OrigEnv);
+        KANT1 = 1 - KlattFilter(ANT1.Freq, ANT1.BandWidth, KAmp1,
+                        SampleRate, FFTSize);
+        KANT2 = 1 - KlattFilter(ANT2.Freq, ANT2.BandWidth, KAmp2,
+                        SampleRate, FFTSize);
+        OrigEnv .*= KANT1 .* KANT2;
+        
         OrigEnv = log(OrigEnv);
 
         #Envelope generation
@@ -85,12 +112,24 @@ for i = 1 : RowNum
         BandWidth = A_BandWidth + D_BandWidth * R;
         Amp = A_Amp + D_Amp * R;
         Slope = A_Slope + D_Slope * R;
+        ANT1 = ANTTransition(A_ANT1, B_ANT1, R);
+        ANT2 = ANTTransition(A_ANT2, B_ANT2, R);
 
         #Generate new envelope
         NewEnv = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
+        
+        #Anti-resonance reconstruction.
+        KAmp1 = GetANTLinearAmp(ANT1, OrigEnv);
+        KAmp2 = GetANTLinearAmp(ANT2, OrigEnv);
+        KANT1 = 1 - KlattFilter(ANT1.Freq, ANT1.BandWidth, KAmp1,
+                        SampleRate, FFTSize);
+        KANT2 = 1 - KlattFilter(ANT2.Freq, ANT2.BandWidth, KAmp2,
+                        SampleRate, FFTSize);
+        NewEnv .*= KANT1 .* KANT2;
+        
         NewEnv = log(NewEnv);
         
-        if(0)
+        if(1)
         plot(OrigEnv(1 : 300), 'b');
         hold on
         plot(Spectrum(1 : 300), 'b');
@@ -106,6 +145,7 @@ for i = 1 : RowNum
         Anchor1 *= FFTSize / SampleRate;
         Anchor2 *= FFTSize / SampleRate;
         
+        #Error gain limitation.
         #HDif = NewEnv - OrigEnv;
         #HPositiveRes = max(HRes, 0);
         #HDif = max(0, min(HDif, HPositiveRes));
@@ -120,7 +160,7 @@ for i = 1 : RowNum
         Spectrum  = HRes + NewEnv;
         RSpectrum = RRes + NewEnv;
         
-        if(0)
+        if(1)
         plot(Spectrum(1 : 300), 'k');
         plot(NewEnv(1 : 300), 'k');
         plot(HRes(1 : 300), 'g');
@@ -131,7 +171,6 @@ for i = 1 : RowNum
         end
         
         Spectrum += Slope;
-        
         
         #Envelope maintaining
         for j = 1 : length(YPeak)
