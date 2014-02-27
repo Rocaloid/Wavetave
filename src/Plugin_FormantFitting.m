@@ -48,16 +48,43 @@ function Plugin_FormantFitting(Spectrum)
         YPeak = Plugin_Var_Harmonics_Magn;
         fflush(stdout);
         Envelope = PeakInterpolate(XPeak, YPeak, FFTSize, - 20) ...
-                       (1 : FFTSize / 2)';
+                       (1 : FFTSize / 2);
         
         #Pre-emphasis as excitation slope.
         Coef(1) = - 0.1;
         Coef(2) = 0;
-        Slope = Coef(2) + (1 : length(Spectrum))' * Coef(1);
-        Spectrum = Spectrum - Slope;
-        Envelpoe = Envelope - Slope;
+        Slope = Coef(2) + (1 : length(Spectrum)) * Coef(1);
+        Spectrum = Spectrum' - Slope;
+        Envelope = Envelope - Slope;
         
+        hold on
+        #Iterative approximation.
+        for step = 1 : 5
+                [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth,
+                                       Amp, N);
+                Freq = Move(Diff, Freq, BandWidth, Amp, N);
+                Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
+        end
+        plot(Estimate + Slope, 'r');
+        plot(Diff, 'g');
+        pause
+        hold off
+end
+
+#Generates Estimate and Differential Spectrum.
+function [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N)
+        global FFTSize;
+        global SampleRate;
+        global EpR_UpperBound;
         
+        Estimate = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
+        Estimate = 20 * log10(Estimate);
+        Diff = Envelope - Estimate;
+        
+        #Cutoff high-frequency content.
+        Diff(EpR_UpperBound : FFTSize / 2) = 0;
+        #Cutoff low-frequency content.
+        Diff(1 : fix(Freq(1) / SampleRate * FFTSize)) = 0;
 end
 
 #Biased differential envelope for Move().
@@ -68,7 +95,7 @@ function Diff = BiasDiff(Diff)
         DiffPos = max(0, Diff);
         
         #Avoid positive rather than negative error.
-        DiffNeg = 0.5 * e .^ (0.5 * DiffNeg) - 0.5;
+        DiffNeg = 3 * e .^ (0.15 * DiffNeg) - 3;
         
         Diff = DiffPos + DiffNeg;
 end
@@ -83,7 +110,7 @@ function Freq = Move(Diff, Freq, BandWidth, Amp, N)
                 Left  = sum(Diff(LBin : Center));
                 Right = sum(Diff(Center : RBin));
                 Dir = Right - Left;
-                Freq(i) += Dir * 15;
+                Freq(i) += Dir * 3;
                 
                 #Freq(i) should be in the range of [Freq(i - 1), Freq(i + 1)].
                 if(i < N)
@@ -108,10 +135,10 @@ function Amp = Scale(Diff, Envelope, Freq, BandWidth, Amp, N)
                 LBin = fix(max(1, F2B(Freq(i) - BandWidth(i))));
                 RBin = fix(F2B(Freq(i) + BandWidth(i)));
                 Sum = sum(Diff(LBin : RBin));
-                Dir = Sum;
-                Amp(i) += Dir / 5;
-                if(Amp(i) < 20 * log10(e ^ Envelope(fix(F2B(Freq(i))))))
-                        Amp(i) = 20 * log10(e ^ Envelope(fix(F2B(Freq(i)))));
+                Dir = Sum
+                Amp(i) += Dir / 60;
+                if(Amp(i) < Envelope(fix(F2B(Freq(i)))))
+                        Amp(i) = Envelope(fix(F2B(Freq(i))));
                 end
         end
 end

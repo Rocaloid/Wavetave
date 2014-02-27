@@ -9,7 +9,7 @@ addpath("./");
 addpath("./Oct");
 addpath("./Util");
 
-Version = "0.31";
+Version = "0.32";
 
 global FFTSize;
 global SampleRate;
@@ -176,6 +176,7 @@ fflush(stdout);
 while(1)
         [Spectrum, Phase, Wave, ExtWave] = UpdateSpectrum(OrigWave);
         figure(2);
+        hold off;
         LBound = fix(FFTSize / SampleRate * SpectrumLowerRange);
         UBound = fix(FFTSize / SampleRate * SpectrumUpperRange);
         plot(Spectrum(1 : UBound));
