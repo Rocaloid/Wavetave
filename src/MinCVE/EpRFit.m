@@ -143,13 +143,6 @@ function EpRFit(Name)
             "EpR_Amp");
 end
 
-#Frequency to Bin index.
-function Ret = F2B(Freq)
-        global FFTSize;
-        global SampleRate;
-        Ret = Freq * FFTSize / SampleRate;
-end
-
 #Generates Estimate and Differential Spectrum.
 function [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N)
         global FFTSize;
