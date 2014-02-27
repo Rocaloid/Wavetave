@@ -1,6 +1,8 @@
 #  Plugin_FormantMarking_EpR.m
 #    Interactive interface for marking formant envelope manually with
-#    Excitation plus Resonance Model.
+#      Excitation plus Resonance Model.
+#
+#  2014.2.27: Add Anti-resonance Modelling.
 #
 #  Reference
 #    Bonada, Jordi, et al. "Singing voice synthesis combining excitation plus
@@ -79,7 +81,14 @@ function Plugin_FormantMarking_EpR(Spectrum)
         
         NSelect = 1;
         while(1)
-                Prompt(NSelect, Freq, BandWidth, Amp);
+                if(NSelect >= 0)
+                        Prompt(NSelect, Freq(NSelect), BandWidth(NSelect), ...
+                            Amp(NSelect));
+                elseif(NSelect == - 1)
+                        Prompt(NSelect, ANT1.Freq, ANT1.BandWidth, ANT1.Amp);
+                elseif(NSelect == - 2)
+                        Prompt(NSelect, ANT2.Freq, ANT2.BandWidth, ANT2.Amp);
+                end
                 
                 #Background spectrum
                 plot(Spectrum);
@@ -93,24 +102,25 @@ function Plugin_FormantMarking_EpR(Spectrum)
                                            SampleRate, FFTSize);
                         Resonance += ResN;
                         plot(20 * log10(ResN), 'g');
-                        text(Freq(i) / SampleRate * FFTSize, Amp(i),
-                             cstrcat("X ", mat2str(fix(Freq(i))), "Hz"));
-                        text(Freq(i) / SampleRate * FFTSize, Amp(i) + 2,
-                             cstrcat("F", mat2str(i - 1)));
+                        ResLabel(Freq(i), Amp(i), "F", i);
                 end
                 
-                #Center of Anti-resonances
-                ANT1Pos = fix(ANT1.Freq / SampleRate * FFTSize);
-                ANT2Pos = fix(ANT2.Freq / SampleRate * FFTSize);
-                #Original spectral amplitude
-                Amp1 = Resonance(ANT1Pos);
-                Amp2 = Resonance(ANT2Pos);
-                #New linear amplitude
-                Magn1 = 10 ^ ((20 * log10(Amp1) - ANT1.Amp) / 20);
-                Magn2 = 10 ^ ((20 * log10(Amp2) - ANT2.Amp) / 20);
+                Formant = Resonance;
+                
                 #Klatt Filter linear amplitude
-                KAmp1 = 1 - Magn1 / Amp1;
-                KAmp2 = 1 - Magn2 / Amp2;
+                KAmp1 = GetANTLinearAmp(ANT1, Resonance);
+                KAmp2 = GetANTLinearAmp(ANT2, Resonance);
+                #Generate Klatt Filters for two Anti-resonances.
+                KANT1 = 1 - KlattFilter(ANT1.Freq, ANT1.BandWidth, KAmp1,
+                                SampleRate, FFTSize);
+                KANT2 = 1 - KlattFilter(ANT2.Freq, ANT2.BandWidth, KAmp2,
+                                SampleRate, FFTSize);
+                #Deploy ANTs.
+                Resonance .*= KANT1 .* KANT2;
+                ResLabel(ANT1.Freq, 20 * log10(Resonance(fix(ANT1.Freq / ...
+                   SampleRate * FFTSize))), "A", 2);
+                ResLabel(ANT2.Freq, 20 * log10(Resonance(fix(ANT2.Freq / ...
+                   SampleRate * FFTSize))), "A", 3);
                 
                 #Plot overlapped resonances.
                 plot(20 * log10(Resonance), 'r');
@@ -120,15 +130,35 @@ function Plugin_FormantMarking_EpR(Spectrum)
                 hold off;
                 [X, Y, Button] = ginput(1);
                 if(Button == 1)
-                        if(X < 0)
-                                X = 0;
+                        if(X < 1)
+                                X = 1;
                         end
-                        Freq(NSelect) = X / FFTSize * SampleRate;
-                        Amp(NSelect)  = Y;
+                        if(NSelect >= 0)
+                                Freq(NSelect) = X / FFTSize * SampleRate;
+                                Amp(NSelect)  = Y;
+                        elseif(NSelect == - 1)
+                                ANT1.Freq = X / FFTSize * SampleRate;
+                                ANT1.Amp = 20 * log10(Formant(fix(X))) - Y;
+                        elseif(NSelect == - 2)
+                                ANT2.Freq = X / FFTSize * SampleRate;
+                                ANT2.Amp = 20 * log10(Formant(fix(X))) - Y;
+                        end
                 elseif(Button == Button_D)
-                        BandWidth(NSelect) *= 1.2;
+                        if(NSelect >= 0)
+                                BandWidth(NSelect) *= 1.2;
+                        elseif(NSelect == - 1)
+                                ANT1.BandWidth *= 1.2;
+                        elseif(NSelect == - 2)
+                                ANT2.BandWidth *= 1.2;
+                        end
                 elseif(Button == Button_A)
-                        BandWidth(NSelect) /= 1.2;
+                        if(NSelect >= 0)
+                                BandWidth(NSelect) /= 1.2;
+                        elseif(NSelect == - 1)
+                                ANT1.BandWidth /= 1.2;
+                        elseif(NSelect == - 2)
+                                ANT2.BandWidth /= 1.2;
+                        end
                         #if(BandWidth(NSelect) > 50)
                         #        BandWidth(NSelect) -= 50;
                         #end
@@ -137,6 +167,10 @@ function Plugin_FormantMarking_EpR(Spectrum)
                         if(Button - 48 + 1 <= N)
                                 NSelect = Button - 48 + 1;
                         end
+                elseif(Button == Button_LB)
+                        NSelect = - 1;
+                elseif(Button == Button_RB)
+                        NSelect = - 2;
                 elseif(Button == - 1)
                         #Save
                         if(strcmp(Environment, "Visual"))
@@ -162,15 +196,47 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Plugin_Var_EpR_ANT2 = ANT2;
 end
 
+#Calculate linear amplitude of an Anti-resonance, to be used as Klatt Filter
+#  amplitude and multipled with resonance spectrum.
+function KAmp = GetANTLinearAmp(ANT, Restrum)
+        global SampleRate;
+        global FFTSize;
+
+        #Center of Anti-resonances
+        ANTPos = fix(ANT.Freq / SampleRate * FFTSize);
+        #Original spectral amplitude
+        RAmp  = Restrum(ANTPos);
+        #New linear amplitude
+        Magn = 10 ^ ((20 * log10(RAmp) - ANT.Amp) / 20);
+        #Klatt Filter linear amplitude
+        KAmp  = 1 - Magn / RAmp;
+end
+
+function ResLabel(Freq, Amp, Type, Num)
+        global SampleRate;
+        global FFTSize;
+        
+        text(Freq / SampleRate * FFTSize, Amp,
+            cstrcat("X ", mat2str(fix(Freq)), "Hz"));
+        text(Freq / SampleRate * FFTSize, Amp + 2,
+            cstrcat(Type, mat2str(Num - 1)));
+end
+
 function Prompt(NSelect, Freq, BandWidth, Amp)
         #clc;
-        printf("Selected formant: %d\n", NSelect - 1);
-        printf("  Central Frequency: %dHz\n", fix(Freq(NSelect)));
-        printf("  Band Width: %dHz\n", fix(BandWidth(NSelect)));
+        if(NSelect >= 0)
+                printf("Selected formant: %d\n", NSelect - 1);
+        else
+                printf("Selected Anti-resonance%d.\n", - NSelect);
+        end
+        printf("  Central Frequency: %dHz\n", fix(Freq));
+        printf("  Band Width: %dHz\n", fix(BandWidth));
         printf("  Relative Amplitude: %.1fDB\n\n",
-            fix(Amp(NSelect) * 10) / 10);
+            fix(Amp * 10) / 10);
         
         printf("    (0 ~ 9) Select formant.\n");
+        printf("        ([) Select ANT1.\n");
+        printf("        (]) Select ANT2.\n");
         printf("  (L-Click) Change freq & amp.\n");
         printf("        (D) Increase band width.\n");
         printf("        (A) Decrease band width.\n");
