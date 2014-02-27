@@ -33,6 +33,8 @@ function Plugin_FormantMarking_EpR(Spectrum)
         global Plugin_Var_EpR_Freq;
         global Plugin_Var_EpR_BandWidth;
         global Plugin_Var_EpR_Amp;
+        global Plugin_Var_EpR_ANT1;
+        global Plugin_Var_EpR_ANT2;
         
         printf("Plugin_FormantMarking_EpR\n");
         fflush(stdout);
@@ -42,11 +44,15 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Freq = Plugin_Var_EpR_Freq;
         BandWidth = Plugin_Var_EpR_BandWidth;
         Amp = Plugin_Var_EpR_Amp;
+        ANT1 = Plugin_Var_EpR_ANT1;
+        ANT2 = Plugin_Var_EpR_ANT2;
         
         Button_Up   = 1009;
         Button_Down = 1011;
         Button_A = 97;
         Button_D = 100;
+        Button_LB = 91;
+        Button_RB = 93;
         Spectrum = Spectrum';
         
         #Normalize (disabled)
@@ -92,6 +98,20 @@ function Plugin_FormantMarking_EpR(Spectrum)
                         text(Freq(i) / SampleRate * FFTSize, Amp(i) + 2,
                              cstrcat("F", mat2str(i - 1)));
                 end
+                
+                #Center of Anti-resonances
+                ANT1Pos = fix(ANT1.Freq / SampleRate * FFTSize);
+                ANT2Pos = fix(ANT2.Freq / SampleRate * FFTSize);
+                #Original spectral amplitude
+                Amp1 = Resonance(ANT1Pos);
+                Amp2 = Resonance(ANT2Pos);
+                #New linear amplitude
+                Magn1 = 10 ^ ((20 * log10(Amp1) - ANT1.Amp) / 20);
+                Magn2 = 10 ^ ((20 * log10(Amp2) - ANT2.Amp) / 20);
+                #Klatt Filter linear amplitude
+                KAmp1 = 1 - Magn1 / Amp1;
+                KAmp2 = 1 - Magn2 / Amp2;
+                
                 #Plot overlapped resonances.
                 plot(20 * log10(Resonance), 'r');
                 axis([LBound, UBound, DBLowerRange, DBUpperRange]);
@@ -138,6 +158,8 @@ function Plugin_FormantMarking_EpR(Spectrum)
         Plugin_Var_EpR_Freq = Freq;
         Plugin_Var_EpR_BandWidth = BandWidth;
         Plugin_Var_EpR_Amp = Amp;
+        Plugin_Var_EpR_ANT1 = ANT1;
+        Plugin_Var_EpR_ANT2 = ANT2;
 end
 
 function Prompt(NSelect, Freq, BandWidth, Amp)
