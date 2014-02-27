@@ -45,20 +45,29 @@ function EpRFit(Name)
         HopFactor = 4;
         HopSize = (CVDB_FramePosition(2) - CVDB_FramePosition(1)) * HopFactor;
 
+        #Initialize global EpR parameters.
         global Plugin_Var_EpR_N;
         global Plugin_Var_EpR_Freq;
         global Plugin_Var_EpR_BandWidth;
         global Plugin_Var_EpR_Amp;
+        global Plugin_Var_EpR_ANT1;
+        global Plugin_Var_EpR_ANT2;
         Plugin_Var_EpR_N = 5;
         Plugin_Var_EpR_Freq = [319.37, 1023.92, 1680.32, 3334.96, 4333.20];
         Plugin_Var_EpR_BandWidth = [250.00, 576.00, 300.00, 281.31, 500.00];
         Plugin_Var_EpR_Amp = [19.241, 26.122, 25.246, 21.564, 18.409];
+        Plugin_Var_EpR_ANT1.Freq = 1300;
+        Plugin_Var_EpR_ANT2.Freq = 2500;
+        Plugin_Var_EpR_ANT1.BandWidth = 500;
+        Plugin_Var_EpR_ANT2.BandWidth = 900;
+        Plugin_Var_EpR_ANT1.Amp = 0;
+        Plugin_Var_EpR_ANT2.Amp = 0;
         c = 1;
         
         #Marking the first spectrum.
         Position = CVDB_FramePosition(1);
         Spectrum = GenerateSpectrum(Wave(Position - FFTSize / 2 : ...
-                                         Position + FFTSize /2 - 1));
+                       Position + FFTSize /2 - 1));
         Plugin_FormantMarking_EpR(Spectrum);
         
         EpR_N(c) = Plugin_Var_EpR_N;
@@ -95,9 +104,9 @@ function EpRFit(Name)
         #Iterative approximation.
         for step = 1 : 5
                 [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth,
-                                                   Amp, N);
+                                       Amp, N);
                 Freq = Move(Diff, Freq, BandWidth, Amp, N);
-                Amp  = Scale(Diff, Freq, BandWidth, Amp, N);
+                Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
         end
         
         Plugin_Var_EpR_Freq = Freq;
@@ -106,10 +115,10 @@ function EpRFit(Name)
         
         Center = CVDB_FramePosition(i);
         Spectrum = GenerateSpectrum(Wave(Center - FFTSize / 2 : ...
-                                    Center + FFTSize / 2 - 1));
+                       Center + FFTSize / 2 - 1));
         Plugin_FormantMarking_EpR(Spectrum);
         
-        if(0)
+        if(1)
         plot(Envelope, "r");
         hold on
         plot(Estimate, "b");
@@ -144,14 +153,17 @@ end
 #Generates Estimate and Differential Spectrum.
 function [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N)
         global FFTSize;
+        global SampleRate;
         global EpR_UpperBound;
         
         Estimate = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
         Estimate = log(Estimate);
         Diff = Envelope - Estimate;
         
-        #Ignore high-frequency content.
+        #Cutoff high-frequency content.
         Diff(EpR_UpperBound : FFTSize / 2) = 0;
+        #Cutoff low-frequency content.
+        Diff(1 : fix(Freq(1) / SampleRate * FFTSize)) = 0;
 end
 
 #Biased differential envelope for Move().
@@ -197,13 +209,16 @@ function Freq = Move(Diff, Freq, BandWidth, Amp, N)
 end
 
 #Vertical adjustment.
-function Amp = Scale(Diff, Freq, BandWidth, Amp, N)
+function Amp = Scale(Diff, Envelope, Freq, BandWidth, Amp, N)
         for i = 2 : N
                 LBin = fix(max(1, F2B(Freq(i) - BandWidth(i))));
                 RBin = fix(F2B(Freq(i) + BandWidth(i)));
                 Sum = sum(Diff(LBin : RBin));
                 Dir = Sum;
-                Amp(i) += Dir / 20;
+                Amp(i) += Dir / 5;
+                if(Amp(i) < 20 * log10(e ^ Envelope(fix(F2B(Freq(i))))))
+                        Amp(i) = 20 * log10(e ^ Envelope(fix(F2B(Freq(i)))));
+                end
         end
 end
 

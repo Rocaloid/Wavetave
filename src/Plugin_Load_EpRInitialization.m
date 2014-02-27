@@ -15,10 +15,10 @@ function Plugin_Load_EpRInitialization()
         
         #Anti-resonances
         Plugin_Var_EpR_ANT1.Freq      = 1500; #Hz
-        Plugin_Var_EpR_ANT1.Amp       = 7;    #DB
-        Plugin_Var_EpR_ANT1.BandWidth = 600;  #Hz
+        Plugin_Var_EpR_ANT1.Amp       = 0;    #DB
+        Plugin_Var_EpR_ANT1.BandWidth = 500;  #Hz
         Plugin_Var_EpR_ANT2.Freq      = 2500; #Hz
-        Plugin_Var_EpR_ANT2.Amp       = 10;   #DB
-        Plugin_Var_EpR_ANT2.BandWidth = 1200; #Hz
+        Plugin_Var_EpR_ANT2.Amp       = 0;    #DB
+        Plugin_Var_EpR_ANT2.BandWidth = 900;  #Hz
 end
 
