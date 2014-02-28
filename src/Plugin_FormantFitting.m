@@ -21,6 +21,11 @@ function Plugin_FormantFitting(Spectrum)
         global Plugin_Var_EpR_ANT1;
         global Plugin_Var_EpR_ANT2;
         
+        global Plugin_Var_EpR_FreqTemplates;
+        global Plugin_Var_EpR_BandWidthTemplates;
+        global Plugin_Var_EpR_AmpTemplates;
+        global Plugin_Var_EpR_TemplateNum;
+        
         global Plugin_Var_F0;
         
         #Invalid analysis frame.
@@ -59,20 +64,38 @@ function Plugin_FormantFitting(Spectrum)
         Spectrum = Spectrum' - Slope;
         Envelope = Envelope - Slope;
         
-        hold on
-        #Iterative approximation.
-        for step = 1 : 5
-                [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth,
-                                       Amp, N);
-                Freq = Move(Diff, Freq, BandWidth, Amp, N);
-                Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
+        #Find the best-fitting EpR parameter set.
+        Min = 9999;
+        for i = 1 : Plugin_Var_EpR_TemplateNum
+                Freq = Plugin_Var_EpR_FreqTemplates(i, : );
+                BandWidth = Plugin_Var_EpR_BandWidthTemplates(i, : );
+                Amp = Plugin_Var_EpR_AmpTemplates(i, : );
+                
+                #Iterative approximation.
+                for Step = 1 : 3
+                        [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, ...
+                                               BandWidth, Amp, N);
+                        Freq = Move(Diff, Freq, BandWidth, Amp, N);
+                        Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
+                end
+                
+                Error = sum(abs(Diff));
+                if(Error < Min)
+                        Min = Error;
+                        BestFreq = Freq;
+                        BestBandWidth = BandWidth;
+                        BestAmp = Amp;
+                end
         end
-        [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth,
-                                Amp, N);
+        Freq = BestFreq;
+        BandWidth = BestBandWidth;
+        Amp = BestAmp;
+        [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N);
         for i = 1 : N
                 ResLabel(Freq(i), Amp(i) + Slope(fix(Freq(i) * FFTSize / ...
                     SampleRate)), "F", i);
         end
+        hold on
         plot(Estimate + Slope, 'r');
         plot(Diff, 'g');
         hold off
