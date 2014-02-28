@@ -65,31 +65,59 @@ function Plugin_FormantFitting(Spectrum)
         Envelope = Envelope - Slope;
         
         #Find the best-fitting EpR parameter set.
-        Min = 9999;
         for i = 1 : Plugin_Var_EpR_TemplateNum
                 Freq = Plugin_Var_EpR_FreqTemplates(i, : );
                 BandWidth = Plugin_Var_EpR_BandWidthTemplates(i, : );
                 Amp = Plugin_Var_EpR_AmpTemplates(i, : );
                 
-                #Iterative approximation.
-                for Step = 1 : 3
-                        [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, ...
-                                               BandWidth, Amp, N);
-                        Freq = Move(Diff, Freq, BandWidth, Amp, N);
-                        Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
-                end
+                [Freq, BandWidth, Amp, Estimate, Diff] = ...
+                    EpROptimize(Envelope, Freq, BandWidth, Amp, N, 6);
                 
-                Error = sum(abs(Diff));
-                if(Error < Min)
-                        Min = Error;
-                        BestFreq = Freq;
-                        BestBandWidth = BandWidth;
-                        BestAmp = Amp;
+                #Neglect very negative error: EpR always produces a "loose"
+                #  envelope.
+                Error = sum(abs(max(- 5, Diff)));
+                
+                #Resonances obviously lower than estimated envelope is invalid.
+                Error += CheckLow(Estimate, Freq, BandWidth, Amp, N) * 10;
+                
+                #Low-frequency formants are expected to be better fitted.
+                LError = sum(abs(Diff(1 : fix(Freq(2) ...
+                             * FFTSize / SampleRate))));
+                
+                TemplateOptFreq(i, : ) = Freq;
+                TemplateOptBandWidth(i, : ) = BandWidth;
+                TemplateOptAmp(i, : ) = Amp;
+                TemplateOptErr(i) = Error;
+                TemplateOptLErr(i) = LError;
+        end
+        
+        #Find the parameter set with smallest error.
+        [Sorted, Match] = sort(TemplateOptErr, "ascend");
+        
+        #Do second sort in a range of 100 Diff error.
+        LErr = 0;
+        TopErr = TemplateOptErr(Match(1));
+        for i = 1 : 3
+                if(TemplateOptErr(Match(i)) > TopErr + 100)
+                        break;
+                else
+                        LErr(i) = TemplateOptLErr(Match(i));
                 end
         end
-        Freq = BestFreq;
-        BandWidth = BestBandWidth;
-        Amp = BestAmp;
+        [LSorted, LMatch] = sort(LErr, "ascend");
+        
+        #Best
+        i = Match(LMatch(1));
+        Freq = TemplateOptFreq(i, : );
+        BandWidth = TemplateOptBandWidth(i, : );
+        Amp = TemplateOptAmp(i, : );
+        
+        #Further optimize
+        [Freq, BandWidth, Amp, Estimate, Diff] = ...
+            EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3);
+        
+        fflush(stdout);
+        #Labeling & plotting
         [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N);
         for i = 1 : N
                 ResLabel(Freq(i), Amp(i) + Slope(fix(Freq(i) * FFTSize / ...
@@ -111,74 +139,15 @@ function ResLabel(Freq, Amp, Type, Num)
             cstrcat(Type, mat2str(Num - 1)));
 end
 
-#Generates Estimate and Differential Spectrum.
-function [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N)
+#Check if any formant is obviously lower than the estimated envelope.
+function Ret = CheckLow(Estimate, Freq, BandWidth, Amp, N)
         global FFTSize;
         global SampleRate;
-        global EpR_UpperBound;
-        
-        Estimate = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
-        Estimate = 20 * log10(Estimate);
-        Diff = Envelope - Estimate;
-        
-        #Cutoff high-frequency content.
-        Diff(EpR_UpperBound : FFTSize / 2) = 0;
-        #Cutoff low-frequency content.
-        Diff(1 : fix(Freq(1) / SampleRate * FFTSize)) = 0;
-end
-
-#Biased differential envelope for Move().
-function Diff = BiasDiff(Diff)
-        global FFTSize;
-        
-        DiffNeg = min(0, Diff);
-        DiffPos = max(0, Diff);
-        
-        #Avoid positive rather than negative error.
-        DiffNeg = 3 * e .^ (0.15 * DiffNeg) - 3;
-        
-        Diff = DiffPos + DiffNeg;
-end
-
-#Horizontal adjustment.
-function Freq = Move(Diff, Freq, BandWidth, Amp, N)
-        Diff = BiasDiff(Diff);
+        Ret = 0;
         for i = 2 : N
-                Center = fix(F2B(Freq(i)));
-                LBin = fix(max(1, F2B(Freq(i) - BandWidth(i) * 1.5)));
-                RBin = fix(F2B(Freq(i) + BandWidth(i) * 1.5));
-                Left  = sum(Diff(LBin : Center));
-                Right = sum(Diff(Center : RBin));
-                Dir = Right - Left;
-                Freq(i) += Dir * 3;
-                
-                #Freq(i) should be in the range of [Freq(i - 1), Freq(i + 1)].
-                if(i < N)
-                        Mid = (Freq(i + 1) + Freq(i - 1)) / 2;
-                        if(Freq(i) > Freq(i + 1))
-                                Freq(i) = max(Freq(i + 1) - 10, Mid);
-                        end
-                        if(Freq(i) < Freq(i - 1))
-                                Freq(i) = min(Freq(i - 1) + 10, Mid);
-                        end
-                else
-                        if(Freq(i) < Freq(i - 1))
-                                Freq(i) = Freq(i - 1) + 10;
-                        end
-                end
-        end
-end
-
-#Vertical adjustment.
-function Amp = Scale(Diff, Envelope, Freq, BandWidth, Amp, N)
-        for i = 2 : N
-                LBin = fix(max(1, F2B(Freq(i) - BandWidth(i))));
-                RBin = fix(F2B(Freq(i) + BandWidth(i)));
-                Sum = sum(Diff(LBin : RBin));
-                Dir = Sum;
-                Amp(i) += Dir / 60;
-                if(Amp(i) < Envelope(fix(F2B(Freq(i)))))
-                        Amp(i) = Envelope(fix(F2B(Freq(i))));
+                Bin = fix(Freq(i) * FFTSize / SampleRate);
+                if(Estimate(Bin) - Amp(i) > 5)
+                        Ret += Estimate(Bin) - Amp(i);
                 end
         end
 end

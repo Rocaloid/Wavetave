@@ -101,13 +101,19 @@ function EpRFit(Name)
         Envelope = PeakInterpolate(XPeak, YPeak, FFTSize, - 20) ...
                        (1 : FFTSize / 2) - Slope;
         
+        DBEnvelope = 20 * log10(e) * Envelope;
+        [Freq, BandWidth, Amp, Estimate, Diff] = ...
+            EpROptimize(DBEnvelope, Freq, BandWidth, Amp, N, 5);
+        Estimate = Estimate / 20 / log10(e);
+        Diff = Diff / 20 / log10(e);
+        
         #Iterative approximation.
-        for step = 1 : 5
-                [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth,
-                                       Amp, N);
-                Freq = Move(Diff, Freq, BandWidth, Amp, N);
-                Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
-        end
+        #for step = 1 : 5
+        #        [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth,
+        #                               Amp, N);
+        #        Freq = Move(Diff, Freq, BandWidth, Amp, N);
+        #        Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
+        #end
         
         Plugin_Var_EpR_Freq = Freq;
         Plugin_Var_EpR_BandWidth = BandWidth;
