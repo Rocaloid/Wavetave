@@ -29,12 +29,14 @@ function Plugin_FormantFitting(Spectrum)
         end
         
         #Initialization
+        global EpR_UpperBound;
         N = Plugin_Var_EpR_N;
         Freq = Plugin_Var_EpR_Freq;
         BandWidth = Plugin_Var_EpR_BandWidth;
         Amp = Plugin_Var_EpR_Amp;
         ANT1 = Plugin_Var_EpR_ANT1;
         ANT2 = Plugin_Var_EpR_ANT2;
+        EpR_UpperBound = fix(5000 / SampleRate * FFTSize);
         
         _Environment = Environment;
         Environment = "Procedure";
@@ -65,10 +67,25 @@ function Plugin_FormantFitting(Spectrum)
                 Freq = Move(Diff, Freq, BandWidth, Amp, N);
                 Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
         end
+        [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth,
+                                Amp, N);
+        for i = 1 : N
+                ResLabel(Freq(i), Amp(i) + Slope(fix(Freq(i) * FFTSize / ...
+                    SampleRate)), "F", i);
+        end
         plot(Estimate + Slope, 'r');
         plot(Diff, 'g');
-        pause
         hold off
+end
+
+function ResLabel(Freq, Amp, Type, Num)
+        global SampleRate;
+        global FFTSize;
+        
+        text(Freq / SampleRate * FFTSize, Amp,
+            cstrcat("X ", mat2str(fix(Freq)), "Hz"));
+        text(Freq / SampleRate * FFTSize, Amp + 2,
+            cstrcat(Type, mat2str(Num - 1)));
 end
 
 #Generates Estimate and Differential Spectrum.
@@ -105,8 +122,8 @@ function Freq = Move(Diff, Freq, BandWidth, Amp, N)
         Diff = BiasDiff(Diff);
         for i = 2 : N
                 Center = fix(F2B(Freq(i)));
-                LBin = fix(max(1, F2B(Freq(i) - BandWidth(i))));
-                RBin = fix(F2B(Freq(i) + BandWidth(i)));
+                LBin = fix(max(1, F2B(Freq(i) - BandWidth(i) * 1.5)));
+                RBin = fix(F2B(Freq(i) + BandWidth(i) * 1.5));
                 Left  = sum(Diff(LBin : Center));
                 Right = sum(Diff(Center : RBin));
                 Dir = Right - Left;
@@ -135,7 +152,7 @@ function Amp = Scale(Diff, Envelope, Freq, BandWidth, Amp, N)
                 LBin = fix(max(1, F2B(Freq(i) - BandWidth(i))));
                 RBin = fix(F2B(Freq(i) + BandWidth(i)));
                 Sum = sum(Diff(LBin : RBin));
-                Dir = Sum
+                Dir = Sum;
                 Amp(i) += Dir / 60;
                 if(Amp(i) < Envelope(fix(F2B(Freq(i)))))
                         Amp(i) = Envelope(fix(F2B(Freq(i))));
