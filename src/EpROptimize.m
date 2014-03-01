@@ -27,6 +27,7 @@ end
 
 #Horizontal adjustment.
 function Freq = Move(Diff, Freq, BandWidth, Amp, N)
+        global Dbg;
         Diff = BiasDiff(Diff);
         for i = 2 : N
                 Center = fix(F2B(Freq(i)));
@@ -35,7 +36,10 @@ function Freq = Move(Diff, Freq, BandWidth, Amp, N)
                 Left  = sum(Diff(LBin : Center));
                 Right = sum(Diff(Center : RBin));
                 Dir = Right - Left;
-                Freq(i) += Dir * 3;
+                Freq(i) += Dir / 2;
+                if(Dbg)
+                        printf("N: %d, Dir; %f\n", i - 1, Dir);
+                end
                 
                 #Freq(i) should be in the range of [Freq(i - 1), Freq(i + 1)].
                 if(i < N)

@@ -116,17 +116,22 @@ function Plugin_FormantFitting(Spectrum)
         [Freq, BandWidth, Amp, Estimate, Diff] = ...
             EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3);
         
-        fflush(stdout);
         #Labeling & plotting
         [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N);
         for i = 1 : N
                 ResLabel(Freq(i), Amp(i) + Slope(fix(Freq(i) * FFTSize / ...
                     SampleRate)), "F", i);
         end
+        if(strcmp(Environment, "Visual"))
         hold on
         plot(Estimate + Slope, 'r');
         plot(Diff, 'g');
         hold off
+        end
+        
+        Plugin_Var_EpR_Freq = Freq;
+        Plugin_Var_EpR_BandWidth = BandWidth;
+        Plugin_Var_EpR_Amp = Amp;
 end
 
 function ResLabel(Freq, Amp, Type, Num)
