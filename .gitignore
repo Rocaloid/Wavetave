@@ -1,5 +1,6 @@
 *~
 octave-workspace
+octave-core
 *.oct
 *.o
 *.cvdb

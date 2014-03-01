@@ -18,29 +18,27 @@ for i = 2 : length(CVDB_Pulses)
 end
 
 #Loading
+
 load Data/e1_preemph.epr;
 A_Freq = Freq;
 A_BandWidth = BandWidth;
 A_Amp = Amp;
-A_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
-A_Slope = DecibelToIFFTLn(A_Slope);
-#A_ANT1.Freq = (A_Freq(1) + A_Freq(2)) / 2;
-#A_ANT2.Freq = (A_Freq(2) + A_Freq(3)) / 2;
-#A_ANT1.Amp = 0;
-#A_ANT2.Amp = 0;
-#A_ANT1.BandWidth = 0;
-#A_ANT2.BandWidth = 0;
-A_ANT1 = ANT1;
-A_ANT2 = ANT2;
-A_ANT1.Amp = ANT1.Amp / 20 * log(10);
-A_ANT2.Amp = ANT2.Amp / 20 * log(10);
 
-load Data/_en1_preemph.epr;
+A_ANT1.Freq = (A_Freq(1) + A_Freq(2)) / 2;
+A_ANT2.Freq = (A_Freq(2) + A_Freq(3)) / 2;
+A_ANT1.Amp = 0;
+A_ANT2.Amp = 0;
+A_ANT1.BandWidth = 0;
+A_ANT2.BandWidth = 0;
+#A_ANT1 = ANT1;
+#A_ANT2 = ANT2;
+#A_ANT1.Amp = ANT1.Amp / 20 * log(10);
+#A_ANT2.Amp = ANT2.Amp / 20 * log(10);
+
+load Data/_en0_preemph.epr;
 B_Freq = Freq;
 B_BandWidth = BandWidth;
 B_Amp = Amp;
-B_Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
-B_Slope = DecibelToIFFTLn(B_Slope);
 B_ANT1 = ANT1;
 B_ANT2 = ANT2;
 #B_ANT1.Freq = (B_Freq(1) + B_Freq(2)) / 2;
@@ -52,11 +50,14 @@ B_ANT2 = ANT2;
 B_ANT1.Amp = B_ANT1.Amp / 20 * log(10);
 B_ANT2.Amp = B_ANT2.Amp / 20 * log(10);
 
+Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
+Slope = DecibelToIFFTLn(Slope);
+
 #Variative EpR
 load Data/e1.vepr;
 
-OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 10 .^ (A_Amp / 20), N);
-OrigEnv = log(OrigEnv);
+#OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 10 .^ (A_Amp / 20), N);
+#OrigEnv = log(OrigEnv);
 
 RowNum = rows(CVDB_Sinusoid_Magn);
 
@@ -77,7 +78,6 @@ for i = 1 : RowNum
         D_Freq = B_Freq - A_Freq;
         D_BandWidth = B_BandWidth - A_BandWidth;
         D_Amp = B_Amp - A_Amp;
-        D_Slope = B_Slope - A_Slope;
         
         OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 
                                         10 .^ (A_Amp / 20), N);
@@ -99,7 +99,7 @@ for i = 1 : RowNum
         XPeak = CVDB_Sinusoid_Freq(i, : ) / SampleRate * FFTSize;
         YPeak = CVDB_Sinusoid_Magn(i, : );
         Spectrum = PeakInterpolate(XPeak, YPeak, FFTSize, - 20) ...
-                       (1 : FFTSize / 2) - A_Slope;
+                       (1 : FFTSize / 2) - Slope;
         RSpectrum = EnvelopeInterpolate(CVDB_Residual2(iResidual, : ),
                                             FFTSize / 2, 8)(1 : FFTSize / 2);
 
@@ -111,7 +111,6 @@ for i = 1 : RowNum
         Freq = A_Freq + D_Freq * R;
         BandWidth = A_BandWidth + D_BandWidth * R;
         Amp = A_Amp + D_Amp * R;
-        Slope = A_Slope + D_Slope * R;
         ANT1 = ANTTransition(A_ANT1, B_ANT1, R);
         ANT2 = ANTTransition(A_ANT2, B_ANT2, R);
 
@@ -129,7 +128,7 @@ for i = 1 : RowNum
         
         NewEnv = log(NewEnv);
         
-        if(1)
+        if(0)
         plot(OrigEnv(1 : 300), 'b');
         hold on
         plot(Spectrum(1 : 300), 'b');
@@ -160,7 +159,7 @@ for i = 1 : RowNum
         Spectrum  = HRes + NewEnv;
         RSpectrum = RRes + NewEnv;
         
-        if(1)
+        if(0)
         plot(Spectrum(1 : 300), 'k');
         plot(NewEnv(1 : 300), 'k');
         plot(HRes(1 : 300), 'g');

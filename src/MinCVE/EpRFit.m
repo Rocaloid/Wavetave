@@ -57,11 +57,13 @@ function EpRFit(Name)
         
         c = 1;
         
-        #Marking the first spectrum.
+        #Mark the first spectrum.
+        global Plugin_Var_F0_Exact;
         Position = CVDB_FramePosition(1);
         Spectrum = GenerateSpectrum(Wave(Position - FFTSize / 2 : ...
                        Position + FFTSize /2 - 1));
-        #TODO: Set the F0.
+        #Formant fitting & marking
+        Plugin_Var_F0_Exact = CVDB_Sinusoid_Freq(1, 1);
         Plugin_FormantFitting(Spectrum);
         Plugin_FormantMarking_EpR(Spectrum);
         
@@ -101,7 +103,7 @@ function EpRFit(Name)
         DBEnvelope = 20 / log(10) * Envelope - Slope;
         global Dbg;
         [Freq, BandWidth, Amp, Estimate, Diff] = ...
-            EpROptimize(DBEnvelope, Freq, BandWidth, Amp, N, 5);
+            EpROptimize(DBEnvelope, Freq, BandWidth, Amp, N, 10);
         Estimate = DecibelToIFFTLn(Estimate);
         Diff = Diff / 20 / log(10);
         
@@ -112,10 +114,10 @@ function EpRFit(Name)
         Center = CVDB_FramePosition(i);
         Spectrum = GenerateSpectrum(Wave(Center - FFTSize / 2 : ...
                        Center + FFTSize / 2 - 1));
-        Plugin_FormantMarking_EpR(Spectrum);
+        #Plugin_FormantMarking_EpR(Spectrum);
         
         #Change this line to debug at particular time.
-        if(Progress > 0)
+        if(Progress > 38)
         plot(DecibelToIFFTLn(Spectrum) - log(4 / FFTSize) - LnSlope', "r");
         hold on
         plot(Envelope - LnSlope, "k");

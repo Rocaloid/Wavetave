@@ -3,12 +3,14 @@
 
 function [Freq, BandWidth, Amp, Estimate, Diff] = ...
     EpROptimize(Envelope, Freq, BandWidth, Amp, N, StepNum)
+        SearchWidth = 500;
         #Iterative approximation.
         for Step = 1 : StepNum
                 [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, ...
                                         BandWidth, Amp, N);
-                Freq = Move(Diff, Freq, BandWidth, Amp, N);
+                Freq = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth);
                 Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
+                SearchWidth *= 0.8;
         end
 end
 
@@ -26,17 +28,19 @@ function Diff = BiasDiff(Diff)
 end
 
 #Horizontal adjustment.
-function Freq = Move(Diff, Freq, BandWidth, Amp, N)
+function Freq = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
         global Dbg;
         Diff = BiasDiff(Diff);
         for i = 2 : N
                 Center = fix(F2B(Freq(i)));
-                LBin = fix(max(1, F2B(Freq(i) - BandWidth(i) * 1.5)));
-                RBin = fix(F2B(Freq(i) + BandWidth(i) * 1.5));
+                #LBin = fix(max(1, F2B(Freq(i) - BandWidth(i) * 1.5)));
+                #RBin = fix(F2B(Freq(i) + BandWidth(i) * 1.5));
+                LBin = fix(max(1, F2B(Freq(i) - SearchWidth)));
+                RBin = fix(F2B(Freq(i) + SearchWidth));
                 Left  = sum(Diff(LBin : Center));
                 Right = sum(Diff(Center : RBin));
                 Dir = Right - Left;
-                Freq(i) += Dir / 2;
+                Freq(i) += Dir / SearchWidth * 500;
                 if(Dbg)
                         printf("N: %d, Dir; %f\n", i - 1, Dir);
                 end
