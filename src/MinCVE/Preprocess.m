@@ -58,6 +58,6 @@ function Preprocess(Path, Name)
         end
         
         NewWave = STFTSynthesis(CFrames, Window, FFTSize, HopSize);
-        wavwrite(NewWave, SampleRate, strcat("Data/", Name, ".wpp"));
+        wavwrite(NewWave', SampleRate, strcat("Data/", Name, ".wpp"));
 end
 

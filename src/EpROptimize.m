@@ -44,8 +44,8 @@ function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
                         Freq(i) += Dir / SearchWidth * 500;
                 elseif(EpROptimize_MoveMethod == 1)
                         #Gravitation method.
-                        A = GetAcceleration(Diff, Freq(i));
-                        Freq(i) += A * 100;
+                        A = GetAcceleration(Diff, Freq(i), SearchWidth);
+                        Freq(i) += A * 10;
                 endif
                 if(Dbg)
                         printf("N: %d, Dir; %f\n", i - 1, Dir);
@@ -82,12 +82,18 @@ end
 #     F = Sum G ------- = G Sum  --------------
 #        i = 1   ri ^ 2    i = 1  (i - fc) ^ 2
 #  F = ma, a = F
-function A = GetAcceleration(Diff, Freq)
+#  Actually the power of denominator does not have to be 2. It's tested that a
+#    smaller value such as 0.5 will be better.
+function A = GetAcceleration(Diff, Freq, SearchWidth = 500)
         global EpR_UpperBound;
         Center = fix(F2B(Freq));
+        LBin = max(1, fix(F2B(Freq - SearchWidth)));
+        RBin = min(EpR_UpperBound, fix(F2B(Freq + SearchWidth)));
+        Diff(1 : LBin) = 0;
+        Diff(RBin : EpR_UpperBound) = 0;
         #Diff > 0: Attract | Diff < 0: Repulse
         F = Diff(1 : EpR_UpperBound) ./ ...
-            (abs((1 : EpR_UpperBound) - Center) .^ 1.5);
+            (abs((1 : EpR_UpperBound) - Center) .^ 0.5);
         F(1 : min(EpR_UpperBound, Center)) *= - 1;
         F(max(1, Center - 3) : min(EpR_UpperBound, Center + 3)) = 0;
         A = sum(F);
