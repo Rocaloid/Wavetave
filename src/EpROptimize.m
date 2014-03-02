@@ -65,6 +65,9 @@ function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
                                 Freq(i) = Freq(i - 1) + 10;
                         end
                 end
+                if(Freq(i) < 80)
+                        Freq(i) = 80;
+                end
         end
 end
 
@@ -83,7 +86,8 @@ function A = GetAcceleration(Diff, Freq)
         global EpR_UpperBound;
         Center = fix(F2B(Freq));
         #Diff > 0: Attract | Diff < 0: Repulse
-        F = Diff(1 : EpR_UpperBound) ./ (((1 : EpR_UpperBound) - Center) .^ 2);
+        F = Diff(1 : EpR_UpperBound) ./ ...
+            (abs((1 : EpR_UpperBound) - Center) .^ 1.5);
         F(1 : min(EpR_UpperBound, Center)) *= - 1;
         F(max(1, Center - 3) : min(EpR_UpperBound, Center + 3)) = 0;
         A = sum(F);
@@ -103,8 +107,8 @@ function Amp = Scale(Diff, Envelope, Estimate, Freq, BandWidth, Amp, N)
                 if(Amp(i) < Envelope(fix(F2B(Freq(i)))))
                         Amp(i) = Envelope(fix(F2B(Freq(i))));
                 end
-                if(Amp(i) < Estimate(fix(F2B(Freq(i)))) - 10)
-                        Amp(i) = Estimate(fix(F2B(Freq(i))) - 10);
+                if(Amp(i) < Estimate(fix(F2B(Freq(i)))) - 7)
+                        Amp(i) = Estimate(fix(F2B(Freq(i)))) - 7;
                 end
         end
 end

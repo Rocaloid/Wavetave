@@ -53,8 +53,9 @@ function EpRFit(Name)
         global Plugin_Var_EpR_ANT1;
         global Plugin_Var_EpR_ANT2;
         global EpROptimize_MoveMethod;
-        #Gravitation method.
-        EpROptimize_MoveMethod = 1;
+        #0: Bilateral Summation method
+        #1: Gravitation method
+        EpROptimize_MoveMethod = 0;
         
         Plugin_Load_EpRInitialization();
         
