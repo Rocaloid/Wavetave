@@ -52,6 +52,9 @@ function EpRFit(Name)
         global Plugin_Var_EpR_Amp;
         global Plugin_Var_EpR_ANT1;
         global Plugin_Var_EpR_ANT2;
+        global EpROptimize_MoveMethod;
+        #Gravitation method.
+        EpROptimize_MoveMethod = 1;
         
         Plugin_Load_EpRInitialization();
         
@@ -72,8 +75,9 @@ function EpRFit(Name)
         EpR_BandWidth(c, : ) = Plugin_Var_EpR_BandWidth;
         EpR_Amp(c, : ) = Plugin_Var_EpR_Amp;
         global EpR_UpperBound;
-        EpR_UpperBound = fix(F2B(Plugin_Var_EpR_Freq(EpR_N(c)) ...
-                       + Plugin_Var_EpR_BandWidth(EpR_N(c))));
+        EpR_UpperBound = 250;
+        #EpR_UpperBound = fix(F2B(Plugin_Var_EpR_Freq(EpR_N(c)) ...
+        #               + Plugin_Var_EpR_BandWidth(EpR_N(c))));
         
         #Pre-emphasis slope generation
         Coef = [- 0.1, 0];

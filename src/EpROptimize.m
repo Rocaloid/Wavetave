@@ -30,17 +30,23 @@ end
 #Horizontal adjustment.
 function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
         global Dbg;
+        global EpROptimize_MoveMethod;
         Diff = BiasDiff(Diff);
         for i = 2 : N
                 Center = fix(F2B(Freq(i)));
-                #LBin = fix(max(1, F2B(Freq(i) - BandWidth(i) * 1.5)));
-                #RBin = fix(F2B(Freq(i) + BandWidth(i) * 1.5));
-                LBin = fix(max(1, F2B(Freq(i) - SearchWidth)));
-                RBin = fix(F2B(Freq(i) + SearchWidth));
-                Left  = sum(Diff(LBin : Center));
-                Right = sum(Diff(Center : RBin));
-                Dir = Right - Left;
-                Freq(i) += Dir / SearchWidth * 500;
+                if(EpROptimize_MoveMethod == 0)
+                        #Bilateral summation method.
+                        LBin = fix(max(1, F2B(Freq(i) - SearchWidth)));
+                        RBin = fix(F2B(Freq(i) + SearchWidth));
+                        Left  = sum(Diff(LBin : Center));
+                        Right = sum(Diff(Center : RBin));
+                        Dir = Right - Left;
+                        Freq(i) += Dir / SearchWidth * 500;
+                elseif(EpROptimize_MoveMethod == 1)
+                        #Gravitation method.
+                        A = GetAcceleration(Diff, Freq(i));
+                        Freq(i) += A * 100;
+                endif
                 if(Dbg)
                         printf("N: %d, Dir; %f\n", i - 1, Dir);
                 end
@@ -60,6 +66,27 @@ function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
                         end
                 end
         end
+end
+
+#Gravitation Method.
+#  Evaluating the direction and frequency distance to shift a EpR resonance.
+#  In the spectrum, assume:
+#  * The y-axis represents mass of each frequency bin.
+#  * The x-axis represents position of each frequency bin.
+#  * The central frequency of a resonance is a point with 1 unit mass.
+#  The attraction on resonance (x-axis) is given by:
+#          N     m * mi      N      XAmp(i)
+#     F = Sum G ------- = G Sum  --------------
+#        i = 1   ri ^ 2    i = 1  (i - fc) ^ 2
+#  F = ma, a = F
+function A = GetAcceleration(Diff, Freq)
+        global EpR_UpperBound;
+        Center = fix(F2B(Freq));
+        #Diff > 0: Attract | Diff < 0: Repulse
+        F = Diff(1 : EpR_UpperBound) ./ (((1 : EpR_UpperBound) - Center) .^ 2);
+        F(1 : min(EpR_UpperBound, Center)) *= - 1;
+        F(max(1, Center - 3) : min(EpR_UpperBound, Center + 3)) = 0;
+        A = sum(F);
 end
 
 #Vertical adjustment.
