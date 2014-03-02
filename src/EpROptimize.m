@@ -8,8 +8,8 @@ function [Freq, BandWidth, Amp, Estimate, Diff] = ...
         for Step = 1 : StepNum
                 [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, ...
                                         BandWidth, Amp, N);
-                Freq = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth);
-                Amp  = Scale(Diff, Envelope, Freq, BandWidth, Amp, N);
+                [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth);
+                Amp  = Scale(Diff, Envelope, Estimate, Freq, BandWidth, Amp, N);
                 SearchWidth *= 0.8;
         end
 end
@@ -28,7 +28,7 @@ function Diff = BiasDiff(Diff)
 end
 
 #Horizontal adjustment.
-function Freq = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
+function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
         global Dbg;
         Diff = BiasDiff(Diff);
         for i = 2 : N
@@ -63,15 +63,21 @@ function Freq = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
 end
 
 #Vertical adjustment.
-function Amp = Scale(Diff, Envelope, Freq, BandWidth, Amp, N)
-        for i = 2 : N
+function Amp = Scale(Diff, Envelope, Estimate, Freq, BandWidth, Amp, N)
+        for i = 1 : N
                 LBin = fix(max(1, F2B(Freq(i) - BandWidth(i))));
                 RBin = fix(F2B(Freq(i) + BandWidth(i)));
                 Sum = sum(Diff(LBin : RBin));
                 Dir = Sum;
                 Amp(i) += Dir / 60;
+                
+                #Peaks should not be submerged under either Envelope or 
+                #  Estimated Envelope - 10dB.
                 if(Amp(i) < Envelope(fix(F2B(Freq(i)))))
                         Amp(i) = Envelope(fix(F2B(Freq(i))));
+                end
+                if(Amp(i) < Estimate(fix(F2B(Freq(i)))) - 10)
+                        Amp(i) = Estimate(fix(F2B(Freq(i))) - 10);
                 end
         end
 end

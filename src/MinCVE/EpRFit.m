@@ -117,7 +117,7 @@ function EpRFit(Name)
         #Plugin_FormantMarking_EpR(Spectrum);
         
         #Change this line to debug at particular time.
-        if(Progress > 38)
+        if(Progress > 0)
         plot(DecibelToIFFTLn(Spectrum) - log(4 / FFTSize) - LnSlope', "r");
         hold on
         plot(Envelope - LnSlope, "k");

@@ -6,7 +6,6 @@
 #  Depends on KlattFilter, Plugin_F0Marking_ByPhase and
 #    Plugin_HarmonicMarking_Naive.
 #
-#  Not finished yet.
 
 function Plugin_FormantFitting(Spectrum)
         global FFTSize;
@@ -71,14 +70,14 @@ function Plugin_FormantFitting(Spectrum)
                 Amp = Plugin_Var_EpR_AmpTemplates(i, : );
                 
                 [Freq, BandWidth, Amp, Estimate, Diff] = ...
-                    EpROptimize(Envelope, Freq, BandWidth, Amp, N, 6);
+                    EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3);
                 
                 #Neglect very negative error: EpR always produces a "loose"
                 #  envelope.
-                Error = sum(abs(max(- 5, Diff)));
+                Error = sum(abs(max(0, Diff)));
                 
-                #Resonances obviously lower than estimated envelope is invalid.
-                Error += CheckLow(Estimate, Freq, BandWidth, Amp, N) * 10;
+                #Resonances obviously higher than spectral envelope are invalid.
+                Error += CheckHigh(Envelope, Freq, BandWidth, Amp, N) * 10;
                 
                 #Low-frequency formants are expected to be better fitted.
                 LError = sum(abs(Diff(1 : fix(Freq(2) ...
@@ -92,6 +91,7 @@ function Plugin_FormantFitting(Spectrum)
         end
         
         #Find the parameter set with smallest error.
+        TemplateOptErr
         [Sorted, Match] = sort(TemplateOptErr, "ascend");
         
         #Do second sort in a range of 100 Diff error.
@@ -144,15 +144,15 @@ function ResLabel(Freq, Amp, Type, Num)
             cstrcat(Type, mat2str(Num - 1)));
 end
 
-#Check if any formant is obviously lower than the estimated envelope.
-function Ret = CheckLow(Estimate, Freq, BandWidth, Amp, N)
+#Check if any formant is obviously higher than spectral envelope.
+function Ret = CheckHigh(Envelope, Freq, BandWidth, Amp, N)
         global FFTSize;
         global SampleRate;
         Ret = 0;
         for i = 2 : N
                 Bin = fix(Freq(i) * FFTSize / SampleRate);
-                if(Estimate(Bin) - Amp(i) > 5)
-                        Ret += Estimate(Bin) - Amp(i);
+                if(Amp(i) - Envelope(Bin) > 5)
+                        Ret += Amp(i) - Envelope(Bin);
                 end
         end
 end
