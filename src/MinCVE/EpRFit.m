@@ -55,7 +55,7 @@ function EpRFit(Name)
         global EpROptimize_MoveMethod;
         #0: Bilateral Summation method
         #1: Gravitation method
-        EpROptimize_MoveMethod = 1;
+        EpROptimize_MoveMethod = 0;
         
         Plugin_Load_EpRInitialization();
         
@@ -110,7 +110,7 @@ function EpRFit(Name)
         [Freq, BandWidth, Amp, Estimate, Diff] = ...
             EpROptimize(DBEnvelope, Freq, BandWidth, Amp, N, 10);
         Estimate = DecibelToIFFTLn(Estimate);
-        Diff = Diff / 20 / log(10);
+        Diff = Diff / 20 * log(10);
         
         #Prepare for manual adjustment.
         Plugin_Var_EpR_Freq = Freq;
@@ -119,20 +119,23 @@ function EpRFit(Name)
         Center = CVDB_FramePosition(i);
         Spectrum = GenerateSpectrum(Wave(Center - FFTSize / 2 : ...
                        Center + FFTSize / 2 - 1));
-        #Plugin_FormantMarking_EpR(Spectrum);
         
         #Change this line to debug at particular time.
         if(Progress > 0)
-        plot(DecibelToIFFTLn(Spectrum) - log(4 / FFTSize) - LnSlope', "r");
+        #plot(DecibelToIFFTLn(Spectrum) - log(4 / FFTSize) - LnSlope', "r");
+        plot((Envelope - LnSlope)(1 : 300), "k");
         hold on
-        plot(Envelope - LnSlope, "k");
-        plot(Estimate - log(4 / FFTSize), "b");
-        plot(Diff, "g");
+        plot((Estimate - log(4 / FFTSize))(1 : 300), "b");
+        plot(Diff(1 : 300), "g");
         plot(0 * (1 : 300), "k");
         hold off
         axis([1, 300, - 5, 5]);
+        for n = 1 : N
+                ResLabel(Freq(n), Amp(n) / 20 * log(10), "F", n, 0.1);
+        end
         pause
         end
+        #Plugin_FormantMarking_EpR(Spectrum);
 
         #Dump back from manual adjustment.
         EpR_N(c) = N;

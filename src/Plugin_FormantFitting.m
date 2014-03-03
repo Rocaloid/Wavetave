@@ -135,16 +135,6 @@ function Plugin_FormantFitting(Spectrum)
         Plugin_Var_EpR_Amp = Amp;
 end
 
-function ResLabel(Freq, Amp, Type, Num)
-        global SampleRate;
-        global FFTSize;
-        
-        text(Freq / SampleRate * FFTSize, Amp,
-            cstrcat("X ", mat2str(fix(Freq)), "Hz"));
-        text(Freq / SampleRate * FFTSize, Amp + 2,
-            cstrcat(Type, mat2str(Num - 1)));
-end
-
 #Check if any formant is obviously higher than spectral envelope.
 function Ret = CheckHigh(Envelope, Freq, BandWidth, Amp, N)
         global FFTSize;

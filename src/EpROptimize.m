@@ -30,6 +30,7 @@ end
 #Horizontal adjustment.
 function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
         global Dbg;
+        global EpR_UpperBound;
         global EpROptimize_MoveMethod;
         Diff = BiasDiff(Diff);
         for i = 2 : N
@@ -46,7 +47,7 @@ function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
                         #Gravitation method.
                         A = GetAcceleration(Diff, Freq(i), SearchWidth);
                         Freq(i) += A * 10;
-                endif
+                end
                 if(Dbg)
                         printf("N: %d, Dir; %f\n", i - 1, Dir);
                 end
@@ -66,7 +67,12 @@ function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
                         end
                 end
                 if(Freq(i) < 80)
+                        #Lower bound.
                         Freq(i) = 80;
+                end
+                if(Freq(i) > B2F(EpR_UpperBound))
+                        #Upper bound
+                        Freq(i) = B2F(EpR_UpperBound);
                 end
         end
 end
