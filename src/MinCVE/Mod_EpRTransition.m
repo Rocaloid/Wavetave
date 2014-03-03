@@ -19,45 +19,25 @@ end
 
 #Loading
 
-load Data/e1_preemph.epr;
-A_Freq = Freq;
-A_BandWidth = BandWidth;
-A_Amp = Amp;
+load Data/i1.xepr;
+A_VFreq = EpR_Freq;
+A_VBwth = EpR_BandWidth;
+A_VAmpl = EpR_Amp;
+A_VANT1 = EpR_ANT1;
+A_VANT2 = EpR_ANT2;
 
-A_ANT1.Freq = (A_Freq(1) + A_Freq(2)) / 2;
-A_ANT2.Freq = (A_Freq(2) + A_Freq(3)) / 2;
-A_ANT1.Amp = 0;
-A_ANT2.Amp = 0;
-A_ANT1.BandWidth = 0;
-A_ANT2.BandWidth = 0;
-#A_ANT1 = ANT1;
-#A_ANT2 = ANT2;
-#A_ANT1.Amp = ANT1.Amp / 20 * log(10);
-#A_ANT2.Amp = ANT2.Amp / 20 * log(10);
-
-load Data/_en0_preemph.epr;
-B_Freq = Freq;
-B_BandWidth = BandWidth;
-B_Amp = Amp;
-B_ANT1 = ANT1;
-B_ANT2 = ANT2;
-#B_ANT1.Freq = (B_Freq(1) + B_Freq(2)) / 2;
-#B_ANT2.Freq = (B_Freq(2) + B_Freq(3)) / 2;
-#B_ANT1.Amp = 0;
-#B_ANT2.Amp = 0;
-#B_ANT1.BandWidth = 0;
-#B_ANT2.BandWidth = 0;
-B_ANT1.Amp = B_ANT1.Amp / 20 * log(10);
-B_ANT2.Amp = B_ANT2.Amp / 20 * log(10);
-
-Slope = Coef(2) + (1 : FFTSize / 2) * Coef(1);
+Slope = - 0.1 * (1 : FFTSize / 2);
 Slope = DecibelToIFFTLn(Slope);
 
 #Variative EpR
-load Data/e1.vepr;
+load Data/a1.xepr;
+B_VFreq = EpR_Freq;
+B_VBwth = EpR_BandWidth;
+B_VAmpl = EpR_Amp;
+B_VANT1 = EpR_ANT1;
+B_VANT2 = EpR_ANT2;
 
-#OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 10 .^ (A_Amp / 20), N);
-#OrigEnv = log(OrigEnv);
+N = 5;
 
 RowNum = rows(CVDB_Sinusoid_Magn);
 
@@ -71,23 +51,6 @@ for i = 1 : RowNum
                 iResidual = rows(CVDB_Residual);
         end
         
-        #Variative EpR
-        [A_Freq, A_BandWidth, A_Amp] = ...
-            EpRIndexer(EpR_Freq, EpR_BandWidth, EpR_Amp, i);
-        
-        D_Freq = B_Freq - A_Freq;
-        D_BandWidth = B_BandWidth - A_BandWidth;
-        D_Amp = B_Amp - A_Amp;
-        
-        OrigEnv = EpR_CumulateResonance(A_Freq, A_BandWidth, 
-                                        10 .^ (A_Amp / 20), N);
-        
-        #Anti-resonance reconstruction.
-        ANT1 = A_ANT1;
-        ANT2 = A_ANT2;
-        OrigEnv .*= GenANTFilter(OrigEnv, ANT1, ANT2);
-        OrigEnv = log(OrigEnv);
-
         #Envelope generation
         XPeak = CVDB_Sinusoid_Freq(i, : ) / SampleRate * FFTSize;
         YPeak = CVDB_Sinusoid_Magn(i, : );
@@ -95,22 +58,38 @@ for i = 1 : RowNum
                        (1 : FFTSize / 2) - Slope;
         RSpectrum = EnvelopeInterpolate(CVDB_Residual2(iResidual, : ),
                                             FFTSize / 2, 8)(1 : FFTSize / 2);
-
+        
         #Pitch shifting
         XPeak *= 1;
-
-        #Formant parameter mixing
+        
+        #Variative EpR & Formant parameter mixing
+        [A_Freq, A_Bwth, A_Ampl, A_ANT1, A_ANT2] = ...
+            EpRIndexer(A_VFreq, A_VBwth, A_VAmpl, A_VANT1, A_VANT2, i);
+        [B_Freq, B_Bwth, B_Ampl, B_ANT1, B_ANT2] = ...
+            EpRIndexer(B_VFreq, B_VBwth, B_VAmpl, B_VANT1, B_VANT2, ...
+                i / RowNum * 4 * rows(B_VFreq));
+        
+        D_Freq = B_Freq - A_Freq;
+        D_Bwth = B_Bwth - A_Bwth;
+        D_Ampl = B_Ampl - A_Ampl;
+        
         R = i / RowNum;
         Freq = A_Freq + D_Freq * R;
-        BandWidth = A_BandWidth + D_BandWidth * R;
-        Amp = A_Amp + D_Amp * R;
+        Bwth = A_Bwth + D_Bwth * R;
+        Ampl = A_Ampl + D_Ampl * R;
         ANT1 = ANTTransition(A_ANT1, B_ANT1, R);
         ANT2 = ANTTransition(A_ANT2, B_ANT2, R);
-
-        #Generate new envelope
-        NewEnv = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
         
-        #Anti-resonance reconstruction.
+        #(Anti)Resonance reconstruction of original envelope.
+        OrigEnv = EpR_CumulateResonance(A_Freq, A_Bwth, 
+                                        10 .^ (A_Ampl / 20), N);
+        OrigResEnv = log(OrigEnv);
+        OrigEnv .*= GenANTFilter(OrigEnv, A_ANT1, A_ANT2);
+        OrigEnv = log(OrigEnv);
+
+        #(Anti)Resonance reconstruction of new envelope.
+        NewEnv = EpR_CumulateResonance(Freq, Bwth, 10 .^ (Ampl / 20), N);
+        NewResEnv = log(NewEnv);
         NewEnv .*= GenANTFilter(NewEnv, ANT1, ANT2);
         NewEnv = log(NewEnv);
         
@@ -122,7 +101,7 @@ for i = 1 : RowNum
         
         #Residual envelope
         HRes = Spectrum - OrigEnv;
-        RRes = RSpectrum - OrigEnv;
+        RRes = RSpectrum - OrigResEnv;
         
         #Compress & Stretch Residual envelope
         Anchor1 = [1, A_Freq, A_Freq(N) + 300, SampleRate / 2];
@@ -131,19 +110,17 @@ for i = 1 : RowNum
         Anchor2 *= FFTSize / SampleRate;
         
         #Error gain limitation.
-        #HDif = NewEnv - OrigEnv;
-        #HPositiveRes = max(HRes, 0);
-        #HDif = max(0, min(HDif, HPositiveRes));
-        #HRes -= HDif;
+        HDif = NewEnv - OrigEnv;
+        HPositiveRes = max(HRes, 0);
+        HDif = max(0, min(HDif, HPositiveRes));
+        HRes -= HDif;
         
         HRes = MapStretch(HRes, Anchor1, Anchor2);
         RRes = MapStretch(RRes, Anchor1, Anchor2);
         
-        #HRes *= (1 - R);
-        
         #Adding resonance envelope
         Spectrum  = HRes + NewEnv;
-        RSpectrum = RRes + NewEnv;
+        RSpectrum = RRes + NewResEnv;
         
         if(0)
         plot(Spectrum(1 : 300), 'k');
