@@ -93,10 +93,10 @@ for i = 1 : RowNum
         NewEnv .*= GenANTFilter(NewEnv, ANT1, ANT2);
         NewEnv = log(NewEnv);
         
-        if(0)
-        plot(OrigEnv(1 : 300), 'b');
-        hold on
-        plot(Spectrum(1 : 300), 'b');
+        if(ShowPlot)
+        #plot(OrigEnv(1 : 300), 'b');
+        #hold on
+        #plot(Spectrum(1 : 300), 'b');
         end
         
         #Residual envelope
@@ -110,25 +110,33 @@ for i = 1 : RowNum
         Anchor2 *= FFTSize / SampleRate;
         
         #Error gain limitation.
-        HDif = NewEnv - OrigEnv;
-        HPositiveRes = max(HRes, 0);
-        HDif = max(0, min(HDif, HPositiveRes));
-        HRes -= HDif;
+        #HDif = NewEnv - OrigEnv;
+        #HPositiveRes = max(HRes, 0);
+        #HDif = max(0, min(HDif, HPositiveRes));
+        #HRes -= HDif;
+        #HNegativeRes = min(HRes, 0);
+        HAbsRes = abs(HRes);
         
         HRes = MapStretch(HRes, Anchor1, Anchor2);
         RRes = MapStretch(RRes, Anchor1, Anchor2);
+        
+        HRes = min(HAbsRes, HRes);
+        HRes = max(- HAbsRes, HRes);
+        
+        #HRes *= (1 - R);
         
         #Adding resonance envelope
         Spectrum  = HRes + NewEnv;
         RSpectrum = RRes + NewResEnv;
         
-        if(0)
-        plot(Spectrum(1 : 300), 'k');
+        if(ShowPlot)
+        plot(Spectrum(1 : 300), 'k'); hold on;
         plot(NewEnv(1 : 300), 'k');
         plot(HRes(1 : 300), 'g');
         
         axis([1, 300, - 5, 5]);
         hold off
+        text(0, - 4.5, strcat("Progress: ", mat2str(R * 100), "%"));
         sleep(0.1);
         end
         
