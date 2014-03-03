@@ -92,7 +92,6 @@ function Plugin_FormantFitting(Spectrum)
         end
         
         #Find the parameter set with smallest error.
-        TemplateOptErr
         [Sorted, Match] = sort(TemplateOptErr, "ascend");
         
         #Do second sort in a range of 100 Diff error.
@@ -113,7 +112,7 @@ function Plugin_FormantFitting(Spectrum)
         BandWidth = TemplateOptBandWidth(i, : );
         Amp = TemplateOptAmp(i, : );
         
-        #Further optimize
+        #Further optimization
         [Freq, BandWidth, Amp, Estimate, Diff] = ...
             EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3, 700);
         
@@ -124,10 +123,15 @@ function Plugin_FormantFitting(Spectrum)
                     SampleRate)), "F", i);
         end
         if(strcmp(Environment, "Visual"))
-        hold on
-        plot(Estimate + Slope, 'r');
-        plot(Diff, 'g');
-        hold off
+                [Plugin_Var_EpR_ANT1, Plugin_Var_EpR_ANT2] = ANTFit( ...
+                    Envelope, Estimate, Freq);
+                Estimate = 10 .^ (Estimate / 20) .* GenANTFilter(Estimate, ...
+                               Plugin_Var_EpR_ANT1, Plugin_Var_EpR_ANT2);
+                Estimate = 20 * log10(Estimate);
+                hold on
+                plot(Estimate + Slope, 'r');
+                plot(Diff, 'g');
+                hold off
         end
         
         Plugin_Var_EpR_Freq = Freq;

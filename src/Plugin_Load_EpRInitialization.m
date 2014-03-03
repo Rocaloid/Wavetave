@@ -77,5 +77,8 @@ function Plugin_Load_EpRInitialization()
                 [300.00, 333.33, 360.00, 486.11, 347.21];#Hz
         Plugin_Var_EpR_AmpTemplates(6, : ) = ...
                 [21.564, 31.819, 20.132, 4.6337, 8.1046];#dB
+        
+        global EpR_LockStat;
+        EpR_LockStat = zeros(1, Plugin_Var_EpR_N);
 end
 

@@ -85,14 +85,7 @@ for i = 1 : RowNum
         #Anti-resonance reconstruction.
         ANT1 = A_ANT1;
         ANT2 = A_ANT2;
-        KAmp1 = GetANTLinearAmp(ANT1, OrigEnv);
-        KAmp2 = GetANTLinearAmp(ANT2, OrigEnv);
-        KANT1 = 1 - KlattFilter(ANT1.Freq, ANT1.BandWidth, KAmp1,
-                        SampleRate, FFTSize);
-        KANT2 = 1 - KlattFilter(ANT2.Freq, ANT2.BandWidth, KAmp2,
-                        SampleRate, FFTSize);
-        OrigEnv .*= KANT1 .* KANT2;
-        
+        OrigEnv .*= GenANTFilter(OrigEnv, ANT1, ANT2);
         OrigEnv = log(OrigEnv);
 
         #Envelope generation
@@ -118,14 +111,7 @@ for i = 1 : RowNum
         NewEnv = EpR_CumulateResonance(Freq, BandWidth, 10 .^ (Amp / 20), N);
         
         #Anti-resonance reconstruction.
-        KAmp1 = GetANTLinearAmp(ANT1, OrigEnv);
-        KAmp2 = GetANTLinearAmp(ANT2, OrigEnv);
-        KANT1 = 1 - KlattFilter(ANT1.Freq, ANT1.BandWidth, KAmp1,
-                        SampleRate, FFTSize);
-        KANT2 = 1 - KlattFilter(ANT2.Freq, ANT2.BandWidth, KAmp2,
-                        SampleRate, FFTSize);
-        NewEnv .*= KANT1 .* KANT2;
-        
+        NewEnv .*= GenANTFilter(NewEnv, ANT1, ANT2);
         NewEnv = log(NewEnv);
         
         if(0)

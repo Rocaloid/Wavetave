@@ -78,7 +78,7 @@ function EpRFit(Name)
         EpR_BandWidth(c, : ) = Plugin_Var_EpR_BandWidth;
         EpR_Amp(c, : ) = Plugin_Var_EpR_Amp;
         global EpR_UpperBound;
-        EpR_UpperBound = 250;
+        EpR_UpperBound = 220;
         #EpR_UpperBound = fix(F2B(Plugin_Var_EpR_Freq(EpR_N(c)) ...
         #               + Plugin_Var_EpR_BandWidth(EpR_N(c))));
         
@@ -110,8 +110,13 @@ function EpRFit(Name)
         global Dbg;
         [Freq, BandWidth, Amp, Estimate, Diff] = ...
             EpROptimize(DBEnvelope, Freq, BandWidth, Amp, N, 3);
-        Estimate = DecibelToIFFTLn(Estimate);
-        Diff = Diff / 20 * log(10);
+        
+        #Anti-resonance generation.
+        [Plugin_Var_EpR_ANT1, Plugin_Var_EpR_ANT2] = ANTFit( ...
+            DBEnvelope, Estimate, Freq);
+        Estimate = 10 .^ (Estimate / 20) .* GenANTFilter(Estimate, ...
+                       Plugin_Var_EpR_ANT1, Plugin_Var_EpR_ANT2);
+        Estimate = 20 * log10(Estimate);
         
         #Prepare for manual adjustment.
         Plugin_Var_EpR_Freq = Freq;
@@ -120,6 +125,8 @@ function EpRFit(Name)
         Center = CVDB_FramePosition(i);
         Spectrum = GenerateSpectrum(Wave(Center - FFTSize / 2 : ...
                        Center + FFTSize / 2 - 1));
+        Estimate = DecibelToIFFTLn(Estimate);
+        Diff = Diff / 20 * log(10);
         
         #Change this line to debug at particular time.
         if(Progress > 0)
@@ -135,6 +142,14 @@ function EpRFit(Name)
                         Amp = Plugin_Var_EpR_Amp;
                         [Diff, Estimate] = GenEstimateDiff( ...
                             Envelope, Freq, BandWidth, Amp, N);
+                        
+                        #Anti-resonance reconstruction.
+                        [Plugin_Var_EpR_ANT1, Plugin_Var_EpR_ANT2] = ANTFit( ...
+                            DBEnvelope, Estimate, Freq);
+                        Estimate = 10 .^ (Estimate / 20) .* GenANTFilter( ...
+                            Estimate, Plugin_Var_EpR_ANT1, Plugin_Var_EpR_ANT2);
+                        Estimate = 20 * log10(Estimate);
+                        
                         Estimate = DecibelToIFFTLn(Estimate);
                         Diff = Diff / 20 * log(10);
                         PlotEpR(Envelope, Estimate, Diff, ...
@@ -163,6 +178,8 @@ function EpRFit(Name)
         EpR_Freq(c, : ) = Plugin_Var_EpR_Freq;
         EpR_BandWidth(c, : ) = Plugin_Var_EpR_BandWidth;
         EpR_Amp(c, : ) = Plugin_Var_EpR_Amp;
+        EpR_ANT1(c, : ) = Plugin_Var_EpR_ANT1;
+        EpR_ANT2(c, : ) = Plugin_Var_EpR_ANT2;
 
         end
         
@@ -170,7 +187,9 @@ function EpRFit(Name)
             "EpR_N", ...
             "EpR_Freq", ...
             "EpR_BandWidth", ...
-            "EpR_Amp");
+            "EpR_Amp", ...
+            "EpR_ANT1", ...
+            "EpR_ANT2");
 end
 
 function PlotEpR(Envelope, Estimate, Diff, LnSlope, Freq, Amp, N)
@@ -191,7 +210,7 @@ function Ret = Prompt(Progress)
         printf("Processing at %d%%\n", Progress);
         printf("  (M) Manual adjustment.\n");
         printf("  (L) Lock/Unlock resonance.\n");
-        printf("Press any else key to continue...\n");
+        printf("Press any key else to continue...\n");
         fflush(stdout);
         [x, y, Ret] = ginput(1);
 end
