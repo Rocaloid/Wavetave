@@ -71,7 +71,7 @@ function Plugin_FormantFitting(Spectrum)
                 Amp = Plugin_Var_EpR_AmpTemplates(i, : );
                 
                 [Freq, BandWidth, Amp, Estimate, Diff] = ...
-                    EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3);
+                    EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3, 400);
                 
                 #Neglect very negative error: EpR always produces a "loose"
                 #  envelope.
@@ -115,7 +115,7 @@ function Plugin_FormantFitting(Spectrum)
         
         #Further optimize
         [Freq, BandWidth, Amp, Estimate, Diff] = ...
-            EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3);
+            EpROptimize(Envelope, Freq, BandWidth, Amp, N, 3, 700);
         
         #Labeling & plotting
         [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, BandWidth, Amp, N);

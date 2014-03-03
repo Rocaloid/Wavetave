@@ -53,6 +53,8 @@ function EpRFit(Name)
         global Plugin_Var_EpR_ANT1;
         global Plugin_Var_EpR_ANT2;
         global EpROptimize_MoveMethod;
+        global EpR_LockStat;
+        EpR_LockStat = zeros(1, 5);
         #0: Bilateral Summation method
         #1: Gravitation method
         EpROptimize_MoveMethod = 0;
@@ -89,7 +91,6 @@ function EpRFit(Name)
         for i = HopFactor : HopFactor : length(CVDB_FramePosition)
         
         Progress = 100 * i / length(CVDB_FramePosition);
-        printf("%d%%\n", Progress);
 
         c ++;
         
@@ -108,7 +109,7 @@ function EpRFit(Name)
         DBEnvelope = 20 / log(10) * Envelope - Slope;
         global Dbg;
         [Freq, BandWidth, Amp, Estimate, Diff] = ...
-            EpROptimize(DBEnvelope, Freq, BandWidth, Amp, N, 10);
+            EpROptimize(DBEnvelope, Freq, BandWidth, Amp, N, 3);
         Estimate = DecibelToIFFTLn(Estimate);
         Diff = Diff / 20 * log(10);
         
@@ -122,21 +123,41 @@ function EpRFit(Name)
         
         #Change this line to debug at particular time.
         if(Progress > 0)
-        #plot(DecibelToIFFTLn(Spectrum) - log(4 / FFTSize) - LnSlope', "r");
-        plot((Envelope - LnSlope)(1 : 300), "k");
-        hold on
-        plot((Estimate - log(4 / FFTSize))(1 : 300), "b");
-        plot(Diff(1 : 300), "g");
-        plot(0 * (1 : 300), "k");
-        hold off
-        axis([1, 300, - 5, 5]);
-        for n = 1 : N
-                ResLabel(Freq(n), Amp(n) / 20 * log(10), "F", n, 0.1);
+                PlotEpR(Envelope, Estimate, Diff, LnSlope, Freq, Amp, N);
         end
-        pause
+        while(1)
+                Ret = Prompt(Progress);
+                clc;
+                if(Ret == 109) #M: Manual Adj
+                        Plugin_FormantMarking_EpR(Spectrum);
+                        Freq = Plugin_Var_EpR_Freq;
+                        BandWidth = Plugin_Var_EpR_BandWidth;
+                        Amp = Plugin_Var_EpR_Amp;
+                        [Diff, Estimate] = GenEstimateDiff( ...
+                            Envelope, Freq, BandWidth, Amp, N);
+                        Estimate = DecibelToIFFTLn(Estimate);
+                        Diff = Diff / 20 * log(10);
+                        PlotEpR(Envelope, Estimate, Diff, ...
+                            LnSlope, Freq, Amp, N);
+                elseif(Ret == 108) #L: Lock/Unlock
+                        printf("  Which resonance to lock/unlock?\n");
+                        fflush(stdout);
+                        [x, y, n] = ginput(1);
+                        n -= 47; #47: 0
+                        if(n < 1 || n > N)
+                                printf("  Invalid resonance index.\n");
+                                fflush(stdout);
+                                break;
+                        end
+                        EpR_LockStat(n) = !EpR_LockStat(n);
+                        printf("  Resonance %d lock stat: %d\n", ...
+                            n - 1, EpR_LockStat(n));
+                        fflush(stdout);
+                else
+                        break;
+                end
         end
-        #Plugin_FormantMarking_EpR(Spectrum);
-
+        
         #Dump back from manual adjustment.
         EpR_N(c) = N;
         EpR_Freq(c, : ) = Plugin_Var_EpR_Freq;
@@ -150,5 +171,28 @@ function EpRFit(Name)
             "EpR_Freq", ...
             "EpR_BandWidth", ...
             "EpR_Amp");
+end
+
+function PlotEpR(Envelope, Estimate, Diff, LnSlope, Freq, Amp, N)
+        global FFTSize;
+        plot((Envelope - LnSlope)(1 : 300), "k");
+        hold on
+        plot((Estimate - log(4 / FFTSize))(1 : 300), "b");
+        plot(Diff(1 : 300), "g");
+        plot(0 * (1 : 300), "k");
+        hold off
+        axis([1, 300, - 5, 5]);
+        for n = 1 : N
+                ResLabel(Freq(n), Amp(n) / 20 * log(10), "F", n, 0.1);
+        end
+end
+
+function Ret = Prompt(Progress)
+        printf("Processing at %d%%\n", Progress);
+        printf("  (M) Manual adjustment.\n");
+        printf("  (L) Lock/Unlock resonance.\n");
+        printf("Press any else key to continue...\n");
+        fflush(stdout);
+        [x, y, Ret] = ginput(1);
 end
 

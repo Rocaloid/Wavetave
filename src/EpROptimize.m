@@ -2,8 +2,7 @@
 #    Roughly minimizes differential envelope of an EpR parameter set.
 
 function [Freq, BandWidth, Amp, Estimate, Diff] = ...
-    EpROptimize(Envelope, Freq, BandWidth, Amp, N, StepNum)
-        SearchWidth = 500;
+    EpROptimize(Envelope, Freq, BandWidth, Amp, N, StepNum, SearchWidth = 1000)
         #Iterative approximation.
         for Step = 1 : StepNum
                 [Diff, Estimate] = GenEstimateDiff(Envelope, Freq, ...
@@ -32,8 +31,13 @@ function [Freq, Amp] = Move(Diff, Freq, BandWidth, Amp, N, SearchWidth = 500)
         global Dbg;
         global EpR_UpperBound;
         global EpROptimize_MoveMethod;
+        global EpR_LockStat;
         Diff = BiasDiff(Diff);
         for i = 2 : N
+                if(EpR_LockStat(i) == 1)
+                        #Locked resonance.
+                        continue;
+                end
                 Center = fix(F2B(Freq(i)));
                 if(EpROptimize_MoveMethod == 0)
                         #Bilateral summation method.
