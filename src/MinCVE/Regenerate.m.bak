@@ -2,7 +2,7 @@
 #    Regenerates wave from CVDB.
 #    Depends on various Plugins and Octs.
 
-function Regenerate(Path, Path2, ShowPlot = 0)
+function Regenerate(Path, ShowPlot = 0)
         addpath("../");
         addpath("../Oct");
         addpath("../Util");
@@ -21,15 +21,6 @@ function Regenerate(Path, Path2, ShowPlot = 0)
         Window = hanning(FFTSize);
         Environment = "Procedure";
         
-        #Target
-        load(strcat("Data/", Path2, ".cvdb"));
-        CVDBUnwrap;
-        CVDB_FramePosition_2 = CVDB_FramePosition;
-        CVDB_Sinusoid_Freq_2 = CVDB_Sinusoid_Freq;
-        CVDB_Sinusoid_Magn_2 = CVDB_Sinusoid_Magn;
-        CVDB_Residual_2 = CVDB_Residual;
-        
-        #Source
         load(strcat("Data/", Path, ".cvdb"));
         CVDBUnwrap;
         
