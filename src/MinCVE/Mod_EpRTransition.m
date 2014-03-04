@@ -19,7 +19,7 @@ end
 
 #Loading
 
-load Data/o-1.xepr;
+load Data/a1.xepr;
 A_VFreq = EpR_Freq;
 A_VBwth = EpR_BandWidth;
 A_VAmpl = EpR_Amp;
@@ -94,9 +94,9 @@ for i = 1 : RowNum
         NewEnv = log(NewEnv);
         
         if(ShowPlot)
-        #plot(OrigEnv(1 : 300), 'b');
-        #hold on
-        #plot(Spectrum(1 : 300), 'b');
+        plot(OrigEnv(1 : 300), 'b');
+        hold on
+        plot(Spectrum(1 : 300), 'b');
         end
         
         #Residual envelope
@@ -122,16 +122,14 @@ for i = 1 : RowNum
         
         HRes = min(HAbsRes, HRes);
         HRes = max(- HAbsRes, HRes);
-        HRes = 0;
-        
-        #HRes *= (1 - R);
-        
+        #HRes *= 0;
+                
         #Adding resonance envelope
         Spectrum  = HRes + NewEnv;
         RSpectrum = RRes + NewEnv;
         
         if(ShowPlot && R > 0.9)
-        plot(Spectrum(1 : 300), 'k'); hold on;
+        plot(Spectrum(1 : 300), 'k'); #hold on;
         plot(NewEnv(1 : 300), 'k');
         plot(HRes(1 : 300), 'g');
         

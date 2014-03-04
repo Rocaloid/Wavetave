@@ -119,12 +119,12 @@ function Amp = Scale(Diff, Envelope, Estimate, Freq, BandWidth, Amp, N)
                 Amp(i) += Dir / 60;
                 
                 #Peaks should not be submerged under either Envelope or 
-                #  Estimated Envelope - 10dB.
-                if(Amp(i) < Envelope(fix(F2B(Freq(i)))))
-                        Amp(i) = Envelope(fix(F2B(Freq(i))));
+                #  Estimated Envelope - 6dB.
+                if(Amp(i) < Envelope(fix(F2B(Freq(i)))) - 6)
+                        Amp(i) = Envelope(fix(F2B(Freq(i)))) - 6;
                 end
-                if(Amp(i) < Estimate(fix(F2B(Freq(i)))) - 7)
-                        Amp(i) = Estimate(fix(F2B(Freq(i)))) - 7;
+                if(Amp(i) < Estimate(fix(F2B(Freq(i)))) - 6)
+                        Amp(i) = Estimate(fix(F2B(Freq(i)))) - 6;
                 end
         end
 end

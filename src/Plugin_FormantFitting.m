@@ -6,7 +6,6 @@
 #  Depends on KlattFilter, Plugin_F0Marking_ByPhase and
 #    Plugin_HarmonicMarking_Naive.
 #
-#  Not finished yet.
 
 function Plugin_FormantFitting(Spectrum)
         global FFTSize;

@@ -65,11 +65,13 @@ function EpRFit(Name)
         
         #Mark the first spectrum.
         global Plugin_Var_F0_Exact;
+        global Plugin_Var_F0;
         Position = CVDB_FramePosition(1);
         Spectrum = GenerateSpectrum(Wave(Position - FFTSize / 2 : ...
                        Position + FFTSize /2 - 1));
         #Formant fitting & marking
         Plugin_Var_F0_Exact = CVDB_Sinusoid_Freq(1, 1);
+        Plugin_Var_F0 = fix(F2B(Plugin_Var_F0_Exact));
         Plugin_FormantFitting(Spectrum);
         Plugin_FormantMarking_EpR(Spectrum);
         
