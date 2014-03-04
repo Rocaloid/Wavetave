@@ -19,7 +19,7 @@ end
 
 #Loading
 
-load Data/i1.xepr;
+load Data/o-1.xepr;
 A_VFreq = EpR_Freq;
 A_VBwth = EpR_BandWidth;
 A_VAmpl = EpR_Amp;
@@ -30,7 +30,7 @@ Slope = - 0.1 * (1 : FFTSize / 2);
 Slope = DecibelToIFFTLn(Slope);
 
 #Variative EpR
-load Data/a1.xepr;
+load Data/e1.xepr;
 B_VFreq = EpR_Freq;
 B_VBwth = EpR_BandWidth;
 B_VAmpl = EpR_Amp;
@@ -83,13 +83,13 @@ for i = 1 : RowNum
         #(Anti)Resonance reconstruction of original envelope.
         OrigEnv = EpR_CumulateResonance(A_Freq, A_Bwth, 
                                         10 .^ (A_Ampl / 20), N);
-        OrigResEnv = log(OrigEnv);
+        #OrigResEnv = log(OrigEnv);
         OrigEnv .*= GenANTFilter(OrigEnv, A_ANT1, A_ANT2);
         OrigEnv = log(OrigEnv);
 
         #(Anti)Resonance reconstruction of new envelope.
         NewEnv = EpR_CumulateResonance(Freq, Bwth, 10 .^ (Ampl / 20), N);
-        NewResEnv = log(NewEnv);
+        #NewResEnv = log(NewEnv);
         NewEnv .*= GenANTFilter(NewEnv, ANT1, ANT2);
         NewEnv = log(NewEnv);
         
@@ -101,7 +101,7 @@ for i = 1 : RowNum
         
         #Residual envelope
         HRes = Spectrum - OrigEnv;
-        RRes = RSpectrum - OrigResEnv;
+        RRes = RSpectrum - OrigEnv;
         
         #Compress & Stretch Residual envelope
         Anchor1 = [1, A_Freq, A_Freq(N) + 300, SampleRate / 2];
@@ -122,14 +122,15 @@ for i = 1 : RowNum
         
         HRes = min(HAbsRes, HRes);
         HRes = max(- HAbsRes, HRes);
+        HRes = 0;
         
         #HRes *= (1 - R);
         
         #Adding resonance envelope
         Spectrum  = HRes + NewEnv;
-        RSpectrum = RRes + NewResEnv;
+        RSpectrum = RRes + NewEnv;
         
-        if(ShowPlot)
+        if(ShowPlot && R > 0.9)
         plot(Spectrum(1 : 300), 'k'); hold on;
         plot(NewEnv(1 : 300), 'k');
         plot(HRes(1 : 300), 'g');

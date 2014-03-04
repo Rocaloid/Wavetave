@@ -1,0 +1,1705 @@
+# Created by Octave 3.8.0, Tue Mar 04 09:12:17 2014 CST <sleepwalking@sleepwalking-Latitude-E6230>
+# name: EpR_N
+# type: matrix
+# rows: 1
+# columns: 49
+ 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5
+
+
+# name: EpR_Freq
+# type: matrix
+# rows: 49
+# columns: 5
+ 150 757.0298479023703 1021.94887337611 3515.717364447768 4310.727892510061
+ 150 709.5437643503458 947.8109551907773 3537.948280464839 4417.144521481548
+ 150 703.7436093067737 922.8917175454767 3536.007704864595 4476.754972449421
+ 150 698.5723052176095 901.3272846623329 3494.869893854954 4490.478861572939
+ 150 705.9034805353793 897.9618376452718 3491.141307808513 4559.822738794307
+ 150 702.0198651084343 885.5659110930434 3182.491962340816 4346.035418063003
+ 150 709.5814748841087 888.1705976980621 3279.240123164071 4377.129335445569
+ 150 708.8507049028009 881.310228895802 3476.18637944035 4931.819364736922
+ 150 713.8189470931355 882.2261723180187 3704.590504812164 4251.347054080084
+ 150 717.8613777068201 1046.386666387399 3160.023536988933 4216.039528527142
+ 150 717.8613777068201 1046.386666387399 3191.260541651569 4204.805315851212
+ 150 717.8613777068201 1046.386666387399 3241.625908744104 4345.728759359453
+ 150 717.8613777068201 1046.386666387399 3275.680009876429 4412.429926777507
+ 150 717.8613777068201 1046.386666387399 3316.976956383145 4512.752033487682
+ 150 717.8613777068201 1046.386666387399 3371.785929375411 4275.420366957097
+ 150 717.8613777068201 1046.386666387399 3398.20316265485 4396.050798593446
+ 150 717.8613777068201 1046.386666387399 3452.033011943366 4262.581266756037
+ 150 717.8613777068201 1046.386666387399 3553.071306853436 4227.273741203072
+ 150 717.8613777068201 1046.386666387399 3619.825334479986 4313.334713090614
+ 150 717.8613777068201 1046.386666387399 3684.405538761026 4359.965113069239
+ 150 717.8613777068201 1046.386666387399 3535.567217870305 4379.738056090816
+ 150 717.8613777068201 1046.386666387399 3523.235271344538 4523.915346683837
+ 150 717.8613777068201 1046.386666387399 3616.969069457235 4497.489143695386
+ 150 717.8613777068201 1046.386666387399 3545.64929756092 4452.004054115036
+ 150 717.8613777068201 1046.386666387399 3413.369163150165 4538.221327931491
+ 150 717.8613777068201 1046.386666387399 3443.086646654009 4216.039528527142
+ 150 717.8613777068201 1046.386666387399 3375.036472210804 4389.560107765572
+ 150 717.8613777068201 1046.386666387399 3353.663923255921 4473.479207329939
+ 150 717.8613777068201 1046.386666387399 3549.27716796172 4330.131323544328
+ 150 717.8613777068201 1046.386666387399 3663.786342590989 4332.472773378932
+ 150 717.8613777068201 1046.386666387399 3643.660081923276 4424.423833787808
+ 150 717.8613777068201 1046.386666387399 3588.071404659926 4496.296174905468
+ 150 717.8613777068201 1046.386666387399 3579.07040027043 4538.830172852567
+ 150 717.8613777068201 1046.386666387399 3658.698183814804 4470.791750176172
+ 150 717.8613777068201 1046.386666387399 3715.504758656797 4426.823401696895
+ 150 717.8613777068201 1046.386666387399 3631.123512156175 4508.15579387037
+ 150 717.8613777068201 1046.386666387399 3608.627004641402 4556.530629293245
+ 150 717.8613777068201 1046.386666387399 3624.825020066274 4549.782768036806
+ 150 717.8613777068201 1046.386666387399 3593.036272993165 4618.376673807159
+ 150 717.8613777068201 1046.386666387399 3476.18637944035 4379.738056090816
+ 150 717.8613777068201 1046.386666387399 3590.715102302233 4437.49366087862
+ 150 717.8613777068201 1046.386666387399 3646.489712124935 4482.472967488176
+ 150 717.8613777068201 1046.386666387399 3671.270799822063 4561.195477821931
+ 150 717.8613777068201 1046.386666387399 3695.442706227709 4580.449076924714
+ 150 717.8613777068201 1046.386666387399 3639.696020932527 4639.776066828794
+ 150 717.8613777068201 1046.386666387399 3147.184436787873 4561.757225880157
+ 150 717.8613777068201 1046.386666387399 3312.056809931593 4526.922128084649
+ 150 717.8613777068201 1046.386666387399 3479.914849922638 4453.842646829076
+ 150 717.8613777068201 1046.386666387399 3562.606273196711 4445.18810899726
+
+
+# name: EpR_BandWidth
+# type: matrix
+# rows: 49
+# columns: 5
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 840 347.22
+ 300 480 300 840 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 700 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 347.22
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+ 300 480 300 486.1111111111111 416.664
+
+
+# name: EpR_Amp
+# type: matrix
+# rows: 49
+# columns: 5
+ 15.6660750277208 24.01307831959158 26.70503240156608 5.19937012428827 10.7250996015936
+ 16.72383082551563 24.89365755592483 27.16962213484013 3.63745718585734 10.25487399888628
+ 17.26235598307565 25.73347451030523 27.77958134358969 1.64766463460394 7.520405543559967
+ 17.70533635461697 26.48588970020262 28.26696463036384 3.779442801410957 5.706988299677596
+ 17.66190690642665 26.80889622111816 28.53188426432483 1.186545077359611 5.736519879671919
+ 17.50556089294148 26.61183509995456 28.27565052000191 -0.084993359893757 6.45949535192563
+ 17.61847745823632 26.56189123453569 28.21919223735449 -2.018233886908488 7.394806226613637
+ 17.71402224425504 26.63300695594735 28.06327682280944 0.762284196547146 11.3094289508632
+ 17.70533635461697 26.97186892099414 27.99107536519303 -2.715553887123345 3.59628154050465
+ 17.66190690642665 26.6070615561954 28.4010624169987 -0.377158034528551 8.446215139442231
+ 17.83562469918795 26.94581125207994 29.50440405171912 2.457456141064611 9.877822045152721
+ 17.79219525099762 27.0326701484606 29.43654553892174 3.221030783920135 11.51896639294189
+ 17.60979156859825 26.84158057642316 29.19659783767019 2.273872931007107 7.693688078556391
+ 17.21024064524727 26.99792658990834 28.77478932212166 1.341450069444386 4.069394886929818
+ 16.88886272863886 26.9805548106322 28.37469553066828 0.7901206157517624 1.60956175298805
+ 16.6804013773253 26.97186892099414 28.21943525338787 0.2897084945205197 -5.407634972322592
+ 16.55879892239239 27.10215726556511 27.86928532735338 -0.2891949632311892 -1.80876494023904
+ 16.78463205298208 27.31930450651674 27.84214192223442 -0.7126136053779888 7.89110225763612
+ 16.94097806646725 27.22375972049802 28.04788893303608 -2.234478956962125 6.203114781173688
+ 16.88886272863886 27.42353518217352 27.96265864096257 -2.506853537376376 5.334055510802441
+ 16.92360628719112 27.60593886457288 27.80305541886313 1.60956175298805 7.01460823373174
+ 16.86280505972467 27.66674009203934 28.10000427086448 1.6757815067654 4.685105098401826
+ 17.0278369628479 27.55382352674449 28.02780281324806 -1.653360444510522 5.576252250250517
+ 17.32315721054211 27.24981738941222 27.78894084820127 -1.819018684775127 6.575875215008677
+ 17.38395843800857 27.29324683760255 27.75094008103474 1.697477753151681 3.767222814765438
+ 17.29709954162792 27.29324683760255 27.97080166249826 3.799032446623292 0.177954847277558
+ 17.21024064524727 27.19770205158383 27.99740219951483 5.956596346093319 3.550223008656046
+ 17.24498420379953 26.77209345931864 27.89751446867709 3.103712198929081 1.71638354473221
+ 17.33184310018017 26.74603579040445 27.70859636904918 -2.999829189863235 5.072188064763163
+ 17.26235598307565 26.9805548106322 27.46267711867146 -3.151509911151507 7.306936511116871
+ 17.41870199656083 27.16295849303157 27.57179360724965 -1.454552625441238 6.907214273076774
+ 17.66190690642665 27.18901616194576 27.84214192223442 -0.1555186631748064 4.798579832990746
+ 17.54030445149373 27.1803302723077 27.78459790338224 -1.39281086875005 4.192117084229965
+ 17.56636212040793 27.13690082411737 27.74116845519191 -5.367801374731844 6.322543286133509
+ 17.77482347172149 27.1803302723077 28.08588970020262 -5.856684527741972 8.92211453030243
+ 17.44475966547502 27.09347137592705 27.84431339464394 -3.907598448494401 7.526132896670661
+ 17.41870199656083 27.05872781737479 27.64670940537796 -1.57880655845047 6.120847027008378
+ 17.42738788619889 27.11952904484124 27.8296559558797 -2.686783886497246 6.111713458601296
+ 17.575048010046 27.0326701484606 27.96265864096257 -0.4884564770221083 6.210112944086415
+ 17.49687500330341 26.97186892099414 27.852999284282 -1.80876494023904 3.04116865869854
+ 17.39264432764663 27.0066124795464 27.9854591012625 -5.07716087934341 5.199515209582927
+ 17.27972776235179 27.25850327905028 28.19663479308795 -3.298004967449394 4.301432113139575
+ 17.08863819031436 27.09347137592705 28.36546677292784 -3.610425058168548 2.454835025029713
+ 17.14075352814275 27.28456094796448 28.62170051725076 -2.593201499072439 4.795174130962064
+ 17.38395843800857 27.06741370701285 28.54298464240579 -2.938306949496582 4.82265434356778
+ 17.44475966547502 27.04135603809866 28.54135603809866 -0.669322709163345 5.131784916212195
+ 17.43607377583696 27.04135603809866 28.61464323191983 -4.179630800912957 3.982538597194963
+ 17.63584923751245 27.07609959665092 28.75524607043601 -6.255746007317242 5.077280938907624
+ 18.22648973290088 26.92843947280381 28.96587889415909 -5.870791209011738 3.964900191451756
+
+
+# name: EpR_ANT1
+# type: struct
+# ndims: 2
+ 49 1
+# length: 3
+# name: Freq
+# type: cell
+# rows: 49
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 0
+# columns: 0
+
+
+# name: <cell-element>
+# type: scalar
+818.26171875
+
+
+# name: <cell-element>
+# type: scalar
+796.728515625
+
+
+# name: <cell-element>
+# type: scalar
+775.1953125
+
+
+# name: <cell-element>
+# type: scalar
+775.1953125
+
+
+# name: <cell-element>
+# type: scalar
+775.1953125
+
+
+# name: <cell-element>
+# type: scalar
+775.1953125
+
+
+# name: <cell-element>
+# type: scalar
+775.1953125
+
+
+# name: <cell-element>
+# type: scalar
+775.1953125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+# name: <cell-element>
+# type: scalar
+861.328125
+
+
+
+
+
+# name: Amp
+# type: cell
+# rows: 49
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 0
+# columns: 0
+
+
+# name: <cell-element>
+# type: scalar
+2.366254090280488
+
+
+# name: <cell-element>
+# type: scalar
+2.76177838095543
+
+
+# name: <cell-element>
+# type: scalar
+2.765370299710547
+
+
+# name: <cell-element>
+# type: scalar
+3.241715001706055
+
+
+# name: <cell-element>
+# type: scalar
+3.446436353736004
+
+
+# name: <cell-element>
+# type: scalar
+3.514338635090414
+
+
+# name: <cell-element>
+# type: scalar
+3.556373205467725
+
+
+# name: <cell-element>
+# type: scalar
+3.872387496517995
+
+
+# name: <cell-element>
+# type: scalar
+0.7352338267081358
+
+
+# name: <cell-element>
+# type: scalar
+0.9219714434884381
+
+
+# name: <cell-element>
+# type: scalar
+0.9372602276051936
+
+
+# name: <cell-element>
+# type: scalar
+0.9411905645601841
+
+
+# name: <cell-element>
+# type: scalar
+0.9991623290415212
+
+
+# name: <cell-element>
+# type: scalar
+1.043728703423749
+
+
+# name: <cell-element>
+# type: scalar
+1.060228054452953
+
+
+# name: <cell-element>
+# type: scalar
+1.12540974858954
+
+
+# name: <cell-element>
+# type: scalar
+1.163237529383885
+
+
+# name: <cell-element>
+# type: scalar
+1.120050673808581
+
+
+# name: <cell-element>
+# type: scalar
+1.159075739211669
+
+
+# name: <cell-element>
+# type: scalar
+1.211016682038114
+
+
+# name: <cell-element>
+# type: scalar
+1.171081971043332
+
+
+# name: <cell-element>
+# type: scalar
+1.167253888292528
+
+
+# name: <cell-element>
+# type: scalar
+1.163781756444877
+
+
+# name: <cell-element>
+# type: scalar
+1.178390501552112
+
+
+# name: <cell-element>
+# type: scalar
+1.144126101195866
+
+
+# name: <cell-element>
+# type: scalar
+1.127586156827466
+
+
+# name: <cell-element>
+# type: scalar
+1.084836945305259
+
+
+# name: <cell-element>
+# type: scalar
+1.107695496256557
+
+
+# name: <cell-element>
+# type: scalar
+1.176095327747532
+
+
+# name: <cell-element>
+# type: scalar
+1.187381280369408
+
+
+# name: <cell-element>
+# type: scalar
+1.152173626139831
+
+
+# name: <cell-element>
+# type: scalar
+1.157830510876984
+
+
+# name: <cell-element>
+# type: scalar
+1.158039189800004
+
+
+# name: <cell-element>
+# type: scalar
+1.115687086617609
+
+
+# name: <cell-element>
+# type: scalar
+1.135483373122806
+
+
+# name: <cell-element>
+# type: scalar
+1.160495908806464
+
+
+# name: <cell-element>
+# type: scalar
+1.141042194817505
+
+
+# name: <cell-element>
+# type: scalar
+1.112047081014662
+
+
+# name: <cell-element>
+# type: scalar
+1.119075195189343
+
+
+# name: <cell-element>
+# type: scalar
+1.102673042233569
+
+
+# name: <cell-element>
+# type: scalar
+1.104147804313627
+
+
+# name: <cell-element>
+# type: scalar
+1.056347129755792
+
+
+# name: <cell-element>
+# type: scalar
+1.04639862613508
+
+
+# name: <cell-element>
+# type: scalar
+1.033494090987844
+
+
+# name: <cell-element>
+# type: scalar
+1.033136677447477
+
+
+# name: <cell-element>
+# type: scalar
+1.022039720002667
+
+
+# name: <cell-element>
+# type: scalar
+1.010261960835734
+
+
+# name: <cell-element>
+# type: scalar
+0.9760425938472395
+
+
+
+
+
+# name: BandWidth
+# type: cell
+# rows: 49
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 0
+# columns: 0
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+# name: <cell-element>
+# type: scalar
+100.4267231052259
+
+
+
+
+
+
+
+# name: EpR_ANT2
+# type: struct
+# ndims: 2
+ 49 1
+# length: 3
+# name: Freq
+# type: cell
+# rows: 49
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 0
+# columns: 0
+
+
+# name: <cell-element>
+# type: scalar
+2239.453125
+
+
+# name: <cell-element>
+# type: scalar
+2217.919921875
+
+
+# name: <cell-element>
+# type: scalar
+2174.853515625
+
+
+# name: <cell-element>
+# type: scalar
+2174.853515625
+
+
+# name: <cell-element>
+# type: scalar
+2024.12109375
+
+
+# name: <cell-element>
+# type: scalar
+2067.1875
+
+
+# name: <cell-element>
+# type: scalar
+2153.3203125
+
+
+# name: <cell-element>
+# type: scalar
+2282.51953125
+
+
+# name: <cell-element>
+# type: scalar
+2088.720703125
+
+
+# name: <cell-element>
+# type: scalar
+2110.25390625
+
+
+# name: <cell-element>
+# type: scalar
+2131.787109375
+
+
+# name: <cell-element>
+# type: scalar
+2153.3203125
+
+
+# name: <cell-element>
+# type: scalar
+2174.853515625
+
+
+# name: <cell-element>
+# type: scalar
+2196.38671875
+
+
+# name: <cell-element>
+# type: scalar
+2196.38671875
+
+
+# name: <cell-element>
+# type: scalar
+2239.453125
+
+
+# name: <cell-element>
+# type: scalar
+2282.51953125
+
+
+# name: <cell-element>
+# type: scalar
+2325.5859375
+
+
+# name: <cell-element>
+# type: scalar
+2347.119140625
+
+
+# name: <cell-element>
+# type: scalar
+2282.51953125
+
+
+# name: <cell-element>
+# type: scalar
+2260.986328125
+
+
+# name: <cell-element>
+# type: scalar
+2304.052734375
+
+
+# name: <cell-element>
+# type: scalar
+2282.51953125
+
+
+# name: <cell-element>
+# type: scalar
+2217.919921875
+
+
+# name: <cell-element>
+# type: scalar
+2217.919921875
+
+
+# name: <cell-element>
+# type: scalar
+2196.38671875
+
+
+# name: <cell-element>
+# type: scalar
+2174.853515625
+
+
+# name: <cell-element>
+# type: scalar
+2282.51953125
+
+
+# name: <cell-element>
+# type: scalar
+2347.119140625
+
+
+# name: <cell-element>
+# type: scalar
+2325.5859375
+
+
+# name: <cell-element>
+# type: scalar
+2304.052734375
+
+
+# name: <cell-element>
+# type: scalar
+2304.052734375
+
+
+# name: <cell-element>
+# type: scalar
+2325.5859375
+
+
+# name: <cell-element>
+# type: scalar
+2368.65234375
+
+
+# name: <cell-element>
+# type: scalar
+2325.5859375
+
+
+# name: <cell-element>
+# type: scalar
+2304.052734375
+
+
+# name: <cell-element>
+# type: scalar
+2325.5859375
+
+
+# name: <cell-element>
+# type: scalar
+2304.052734375
+
+
+# name: <cell-element>
+# type: scalar
+2239.453125
+
+
+# name: <cell-element>
+# type: scalar
+2304.052734375
+
+
+# name: <cell-element>
+# type: scalar
+2325.5859375
+
+
+# name: <cell-element>
+# type: scalar
+2347.119140625
+
+
+# name: <cell-element>
+# type: scalar
+2347.119140625
+
+
+# name: <cell-element>
+# type: scalar
+2325.5859375
+
+
+# name: <cell-element>
+# type: scalar
+2088.720703125
+
+
+# name: <cell-element>
+# type: scalar
+2153.3203125
+
+
+# name: <cell-element>
+# type: scalar
+2239.453125
+
+
+# name: <cell-element>
+# type: scalar
+2282.51953125
+
+
+
+
+
+# name: Amp
+# type: cell
+# rows: 49
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 0
+# columns: 0
+
+
+# name: <cell-element>
+# type: scalar
+11.96531083448613
+
+
+# name: <cell-element>
+# type: scalar
+11.46939014652955
+
+
+# name: <cell-element>
+# type: scalar
+13.41587591381999
+
+
+# name: <cell-element>
+# type: scalar
+13.10436447586251
+
+
+# name: <cell-element>
+# type: scalar
+14.58758008300836
+
+
+# name: <cell-element>
+# type: scalar
+16.11387195039842
+
+
+# name: <cell-element>
+# type: scalar
+18.26856466839522
+
+
+# name: <cell-element>
+# type: scalar
+19.8144806637473
+
+
+# name: <cell-element>
+# type: scalar
+17.99881751928151
+
+
+# name: <cell-element>
+# type: scalar
+17.64143068654825
+
+
+# name: <cell-element>
+# type: scalar
+16.58536908635705
+
+
+# name: <cell-element>
+# type: scalar
+15.31579993323287
+
+
+# name: <cell-element>
+# type: scalar
+14.77074938336452
+
+
+# name: <cell-element>
+# type: scalar
+15.97000180978325
+
+
+# name: <cell-element>
+# type: scalar
+15.40956096259339
+
+
+# name: <cell-element>
+# type: scalar
+15.08323787120559
+
+
+# name: <cell-element>
+# type: scalar
+14.35511407914373
+
+
+# name: <cell-element>
+# type: scalar
+16.79371595089401
+
+
+# name: <cell-element>
+# type: scalar
+17.4835239086034
+
+
+# name: <cell-element>
+# type: scalar
+14.30377721847586
+
+
+# name: <cell-element>
+# type: scalar
+12.60611974664527
+
+
+# name: <cell-element>
+# type: scalar
+13.42228744395619
+
+
+# name: <cell-element>
+# type: scalar
+15.3780325243671
+
+
+# name: <cell-element>
+# type: scalar
+13.75835539862429
+
+
+# name: <cell-element>
+# type: scalar
+13.43982839804883
+
+
+# name: <cell-element>
+# type: scalar
+12.41900393757727
+
+
+# name: <cell-element>
+# type: scalar
+14.30741758429983
+
+
+# name: <cell-element>
+# type: scalar
+17.97629080456128
+
+
+# name: <cell-element>
+# type: scalar
+18.01893686460654
+
+
+# name: <cell-element>
+# type: scalar
+17.10103133685909
+
+
+# name: <cell-element>
+# type: scalar
+16.46026009510135
+
+
+# name: <cell-element>
+# type: scalar
+16.99824062122271
+
+
+# name: <cell-element>
+# type: scalar
+17.85156314824805
+
+
+# name: <cell-element>
+# type: scalar
+18.6308611932869
+
+
+# name: <cell-element>
+# type: scalar
+18.67223678016481
+
+
+# name: <cell-element>
+# type: scalar
+18.28008990940114
+
+
+# name: <cell-element>
+# type: scalar
+19.63813595055086
+
+
+# name: <cell-element>
+# type: scalar
+17.67323848726018
+
+
+# name: <cell-element>
+# type: scalar
+18.27937432056447
+
+
+# name: <cell-element>
+# type: scalar
+21.81871741248209
+
+
+# name: <cell-element>
+# type: scalar
+28.1732488150482
+
+
+# name: <cell-element>
+# type: scalar
+22.71865841733243
+
+
+# name: <cell-element>
+# type: scalar
+23.95521322556572
+
+
+# name: <cell-element>
+# type: scalar
+25.16138454733696
+
+
+# name: <cell-element>
+# type: scalar
+15.37775492433613
+
+
+# name: <cell-element>
+# type: scalar
+16.6537336339897
+
+
+# name: <cell-element>
+# type: scalar
+16.62653369067251
+
+
+# name: <cell-element>
+# type: scalar
+14.84262042429104
+
+
+
+
+
+# name: BandWidth
+# type: cell
+# rows: 49
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 0
+# columns: 0
+
+
+# name: <cell-element>
+# type: scalar
+904.1495188664558
+
+
+# name: <cell-element>
+# type: scalar
+906.5197430306663
+
+
+# name: <cell-element>
+# type: scalar
+891.468361673867
+
+
+# name: <cell-element>
+# type: scalar
+893.8241745858097
+
+
+# name: <cell-element>
+# type: scalar
+796.9886278598697
+
+
+# name: <cell-element>
+# type: scalar
+825.3118316113565
+
+
+# name: <cell-element>
+# type: scalar
+890.4070585229385
+
+
+# name: <cell-element>
+# type: scalar
+980.2053512523869
+
+
+# name: <cell-element>
+# type: scalar
+729.6338257163204
+
+
+# name: <cell-element>
+# type: scalar
+744.7070679038204
+
+
+# name: <cell-element>
+# type: scalar
+759.7803100913204
+
+
+# name: <cell-element>
+# type: scalar
+774.8535522788204
+
+
+# name: <cell-element>
+# type: scalar
+789.9267944663204
+
+
+# name: <cell-element>
+# type: scalar
+805.0000366538204
+
+
+# name: <cell-element>
+# type: scalar
+805.0000366538204
+
+
+# name: <cell-element>
+# type: scalar
+835.1465210288204
+
+
+# name: <cell-element>
+# type: scalar
+865.2930054038204
+
+
+# name: <cell-element>
+# type: scalar
+895.4394897788204
+
+
+# name: <cell-element>
+# type: scalar
+910.5127319663204
+
+
+# name: <cell-element>
+# type: scalar
+865.2930054038204
+
+
+# name: <cell-element>
+# type: scalar
+850.2197632163204
+
+
+# name: <cell-element>
+# type: scalar
+880.3662475913204
+
+
+# name: <cell-element>
+# type: scalar
+865.2930054038204
+
+
+# name: <cell-element>
+# type: scalar
+820.0732788413204
+
+
+# name: <cell-element>
+# type: scalar
+820.0732788413204
+
+
+# name: <cell-element>
+# type: scalar
+805.0000366538204
+
+
+# name: <cell-element>
+# type: scalar
+789.9267944663204
+
+
+# name: <cell-element>
+# type: scalar
+865.2930054038204
+
+
+# name: <cell-element>
+# type: scalar
+910.5127319663204
+
+
+# name: <cell-element>
+# type: scalar
+895.4394897788204
+
+
+# name: <cell-element>
+# type: scalar
+880.3662475913204
+
+
+# name: <cell-element>
+# type: scalar
+880.3662475913204
+
+
+# name: <cell-element>
+# type: scalar
+895.4394897788204
+
+
+# name: <cell-element>
+# type: scalar
+925.5859741538204
+
+
+# name: <cell-element>
+# type: scalar
+895.4394897788204
+
+
+# name: <cell-element>
+# type: scalar
+880.3662475913204
+
+
+# name: <cell-element>
+# type: scalar
+895.4394897788204
+
+
+# name: <cell-element>
+# type: scalar
+880.3662475913204
+
+
+# name: <cell-element>
+# type: scalar
+835.1465210288204
+
+
+# name: <cell-element>
+# type: scalar
+880.3662475913204
+
+
+# name: <cell-element>
+# type: scalar
+895.4394897788204
+
+
+# name: <cell-element>
+# type: scalar
+910.5127319663204
+
+
+# name: <cell-element>
+# type: scalar
+910.5127319663204
+
+
+# name: <cell-element>
+# type: scalar
+895.4394897788204
+
+
+# name: <cell-element>
+# type: scalar
+729.6338257163204
+
+
+# name: <cell-element>
+# type: scalar
+774.8535522788204
+
+
+# name: <cell-element>
+# type: scalar
+835.1465210288204
+
+
+# name: <cell-element>
+# type: scalar
+865.2930054038204
+
+
+
+
+
+
+
