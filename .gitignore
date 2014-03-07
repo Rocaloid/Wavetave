@@ -1,4 +1,5 @@
 *~
+*.nd
 octave-workspace
 octave-core
 *.oct

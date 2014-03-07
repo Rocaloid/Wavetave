@@ -1,14 +1,48 @@
-#  Plugin_HarmonicMarking.m
-#    Finds the positions of harmonic peaks within the visible spectrum area
-#      and marks them out.
-#  Depends on Plugin_F0Marking.m
-#
-#  The Algorithm
-#    For the first few harmonics, it looks for peaks around the integer
-#      multiples of fundamental frequency.
-#    For higher harmonics, it looks for peaks as correcting the fundamental
-#      frequency simutaneously.
+#{
+    Title: Plugin_HarmonicMarking
+    
+    Finds the positions of harmonic peaks within the visible spectrum area and
+    marks them out.
+    
+    Algorithm:
+    (start code)
+    For the first few harmonics, it looks for peaks around the integer
+      multiples of fundamental frequency.
+    For higher harmonics, it looks for peaks as correcting the fundamental
+      frequency simutaneously.
+    (end)
+    
+    Function: Plugin_HarmonicMarking
+    
+    Parameters:
+    
+        Spectrum - The decibel-magnitude spectrum to be analyzed.
+        (1 Dimensional Real Array)
+        
+        Phase - The corresponding phase spectrum.
+        (1 Dimensional Real Array)
+        
+        Wave - The corresponding time-domain singal.
+        (1 Dimensional Real Array)
 
+    Input Global Variables:
+        
+        <FFTSize>
+        
+        <SampleRate>
+        
+        <SpectrumUpperRange>
+    
+        <Plugin_Var_F0>
+
+    Output Global Variables:
+    
+        <Plugin_Var_F0>
+    
+    Dependency:
+    
+        Plugin_F0Marking
+#}
 function Plugin_HarmonicMarking(Spectrum, Phase, Wave)
         global FFTSize;
         global SampleRate;

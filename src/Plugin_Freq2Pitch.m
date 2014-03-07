@@ -1,8 +1,31 @@
-#  Plugin_Freq2Pitch.m
-#    Converts frequency to pitch and displays.
-#  Depends on Plugin_F0Marking_ByPhase.m
+#{
+    Title: Plugin_Freq2Pitch
+    
+    Converts frequency to pitch and displays.
+    
+    Function: Plugin_Freq2Pitch
+    
+    Parameters:
+    
+        None.
 
-function Plugin_Freq2Pitch(Spectrum, Phase, Wave)
+    Input Global Variables:
+        
+        <FFTSize>
+        
+        <SampleRate>
+            
+        <Plugin_Var_F0_Exact>
+
+    Output Global Variables:
+    
+        None.
+    
+    Dependency:
+    
+        Plugin_F0Marking_ByPhase
+#}
+function Plugin_Freq2Pitch()
         global FFTSize;
         global SampleRate;
         global Plugin_Var_F0_Exact;

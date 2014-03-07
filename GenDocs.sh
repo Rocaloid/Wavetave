@@ -1,3 +1,3 @@
 #! /bin/bash
-naturaldocs -i ./src -p ../Rocaloid-Doc/NaturalDocsProj/Wavetave -o html ../Rocaloid-Doc/Wavetave
+naturaldocs -i ./src -p ./doc/proj -o html ./doc
 
