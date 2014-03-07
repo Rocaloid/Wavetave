@@ -126,6 +126,7 @@ function Regenerate(Path, Path2, ShowPlot = 0)
         end
         
         #Turbulent Noise reconstruction.
+        wavwrite(Sto', 44100, 'residual_orig.wav');
         Sto = GenTurbulentNoise(Ret, Sto, CVDB_Pulses(CVDB_VOTIndex));
         Sto *= 0.8;
         

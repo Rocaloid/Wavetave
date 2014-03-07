@@ -151,7 +151,7 @@ for i = 1 : RowNum
         Spectrum_2  = HRes_2 + NewEnv;
         RSpectrum_2 = RRes_2 + NewEnv;
         
-        if(ShowPlot && R > 0.9)
+        if(ShowPlot)
         plot(Spectrum(1 : 300), 'k'); #hold on;
         plot(NewEnv(1 : 300), 'k');
         plot(HRes(1 : 300), 'g');

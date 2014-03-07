@@ -1,8 +1,11 @@
 #! /usr/bin/env octave
-#  SpectrumVisualizer.m
-#    Displays waveform and spectrum figures;
-#    Interacts with user;
-#    Loads and calls plugins.
+
+#{
+    Title: SpectrumVisualizer
+        Displays waveform and spectrum figures;
+        Interacts with user;
+        Loads and calls plugins.
+#}
 
 clear;
 addpath("./");
@@ -11,30 +14,137 @@ addpath("./Util");
 
 Version = "0.32";
 
+#{
+    Section: Globals
+    
+    Variable: FFTSize
+    
+        Number of FFT points.
+    
+        (Int Scalar)
+#}
 global FFTSize;
+
+#{
+    Variable: SampleRate
+    
+        Sample rate(Hertz) of wave being loaded and processed.
+    
+        (Int Scalar)
+#}
 global SampleRate;
+
+#{
+    Variable: Window
+        
+        The analysis window used throughout Wavetave.
+    
+        (1 Dimensional Real Array)
+#}
 global Window;
+
+#{
+    Variable: ViewPos
+        
+        The central position(in sample) of view window in the wave.
+    
+        (Int Scalar)
+#}
 global ViewPos;
+
+#{
+    Variable: ViewWidth
+        
+        The width(in sample) of view window.
+    
+        (Int Scalar)
+#}
 global ViewWidth;
+
+#{
+    Variable: Length
+        
+        The number of samples in the wave being analyzed.
+    
+        (Int Scalar)
+#}
 global Length;
+
+#{
+    Variable: PlotLeft
+        
+        The left boundary(in sample) of the view window in the wave being
+        analyzed.
+    
+        (Int Scalar)
+#}
 global PlotLeft;
 
+#{
+    Variable: SpectrumLowerRange
+        
+        The left boundary(Hertz) of the spectrum.
+    
+        (Int Scalar)
+#}
 global SpectrumLowerRange;
+
+#{
+    Variable: SpectrumUpperRange
+        
+        The Right boundary(Hertz) of the spectrum.
+    
+        (Int Scalar)
+#}
 global SpectrumUpperRange;
+
+#{
+    Variable: DBLowerRange
+        
+        The lower boundary(dB) of the spectrum.
+    
+        (Real Scalar)
+#}
 global DBLowerRange;
+
+#{
+    Variable: DBUpperRange
+        
+        The upper boundary(dB) of the spectrum.
+    
+        (Real Scalar)
+#}
 global DBUpperRange;
 
-#  Global variable for plugins to identify where they are running in.
+#{
+    Variable: Environment
+        
+        Global variable for plugins to identify where they are running in.
+    
+        (String)
+#}
 global Environment;
 Environment = "Visual";
 
 function Empty
 end
 
-#  Functions in Plugin_Load are called when a new wave file is loaded.
-#  Call parameter(s):
-#    FunctionName(Wave)
-#  Wave: an array of the whole loaded signal.
+#{
+    Variable: Plugin_Load
+        
+        Functions in Plugin_Load are called when a new wave file is loaded.
+        
+        (Char Matrix)
+        
+        Containing Function:
+        
+            FunctionName(Wave)
+        
+        Call parameter(s):
+        
+            Wave - an array of the whole loaded signal.
+            (Real 1 Dimensional Array)
+#}
 global Plugin_Load = [
                 "Empty"
                 "Plugin_Load_EpRInitialization"
@@ -43,10 +153,22 @@ global Plugin_Load = [
         #       "Plugin_Load_PulseMarking_Naive"
         ];
 
-#  Functions in Plugin_Wave are called when a waveform redraw takes place.
-#  Call parameter(s):
-#    FunctionName(Wave)
-#  Wave: an array of signal contained in the visible area.
+#{
+    Variable: Plugin_Wave
+        
+        Functions in Plugin_Wave are called when a waveform redraw takes place.
+        
+        (Char Matrix)
+        
+        Containing Function:
+        
+            FunctionName(Wave)
+        
+        Call parameter(s):
+        
+            Wave - an array of signal contained in the visible area.
+            (Real 1 Dimensional Array)
+#}
 global Plugin_Wave = [
                 "Empty"
         #       "Plugin_UnvoicedDetection"
@@ -54,17 +176,34 @@ global Plugin_Wave = [
         #       "Plugin_VOTMarking"
         ];
 
-#  Functions in Plugin_Spectrum are called when a spectrum redraw takes place.
-#  Call parameter(s):
-#    FunctionName(Spectrum, Phase, Wave, ExtWave)
-#  Spectrum: The decibel magnitude spectrum of a FFTSize-size fourier transform
-#    at the center of the visible area.
-#  Phase: The phase spectrum of a FFTSize-size fourier transform at the center
-#    of the visible area.
-#  Wave: an array of signal centered in the visible area. Its length is equal
-#    to FFTSize.
-#  ExtWave: Extended Wave, which means it's 128 samples longer than Wave. Can
-#    be useful in precise fundamental frequency detection.
+#{
+    Variable: Plugin_Spectrum
+        
+        Functions in Plugin_Spectrum are called when a spectrum redraw takes
+        place.
+        
+        (Char Matrix)
+        
+        Containing Function:
+        
+            FunctionName(Spectrum, Phase, Wave, ExtWave)
+        
+        Call parameter(s):
+        
+            Spectrum: The decibel magnitude spectrum of a FFTSize-size fourier 
+            transform at the center of the visible area.
+            (Real 1 Dimensional Array)
+            
+            Phase: The phase spectrum gained by a FFT at the center of the
+            visible area. (Real 1 Dimensional Array)
+            
+            Wave: an array of signal centered in the visible area. Its length
+            is equal to FFTSize. (Real 1 Dimensional Array)
+            
+            ExtWave: Extended Wave, which means it's 128 samples longer than
+            Wave. Can be useful in precise fundamental frequency detection.
+            (Real 1 Dimensional Array)
+#}
 global Plugin_Spectrum = [
                 "Empty"
                 "Plugin_F0Marking"

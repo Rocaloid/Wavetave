@@ -1,17 +1,49 @@
-#  Plugin_F0Marking.m
-#    Finds the fundamental frequency by looking for peaks in magnitude
-#      spectrum.
-#    Stores the fundamental frequency in global variable Plugin_Var_F0
-#      (in bin-index form).
-#
-#  The Algorithm
-#    From left(low-freq) to right(high-freq) in the decibel magnitude
-#      Spectrum, find the spectral peak which has the biggest difference to
-#      the maximum of spectrum on its left.
+#{
+    Title: Plugin_F0Marking
+    
+    Finds the fundamental frequency by looking for peaks in magnitude spectrum.
+    
+    Stores the fundamental frequency in global variable Plugin_Var_F0(in 
+    bin-index form).
+    
+    Algorithm:
+
+    From left(low-freq) to right(high-freq) in the decibel magnitude spectrum,
+    find the spectral peak which has the biggest difference to the maximum of 
+    spectrum on its left.
+    
+    Function: Plugin_F0Marking
+    
+    Parameters:
+    
+        Spectrum - The decibel-magnitude spectrum to be analyzed.
+        (1 Dimensional Real Array)
+
+    Input Global Variables:
+        
+        <FFTSize>
+        
+        <SampleRate>
+        
+        <Environment>
+
+    Output Global Variables:
+    
+        <Plugin_Var_F0>
+#}
 function Plugin_F0Marking(Spectrum)
         global FFTSize;
         global SampleRate;
         global Environment;
+        #{
+            Section: Globals
+            
+                Variable: Plugin_Var_F0
+                
+                    The fundamental frequency estimated by <Plugin_F0Marking>.
+                
+                    (Int Scalar)
+        #}
         global Plugin_Var_F0;
         #Sets the minimum F0 to 50Hz.
         F0 = fix(50 * FFTSize / SampleRate + 1);
