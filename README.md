@@ -17,6 +17,8 @@ The aim of Wavetave is to test and design algorithms for Rocaloid.
 
 * Sanjaume, Jordi Bonada. Voice processing and synthesis by performance sampling and spectral models. Diss. Universitat Pompeu Fabra, 2008.
 
+* De Cheveigné, Alain, and Hideki Kawahara. "YIN, a fundamental frequency estimator for speech and music." The Journal of the Acoustical Society of America 111.4 (2002): 1917-1930.
+
 ---
 
 The main component of Wavetave is a Spectrum Visualizer, located at `src/SpectrumVisualizer.m`

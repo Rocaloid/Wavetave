@@ -206,8 +206,9 @@ global Plugin_Wave = [
 #}
 global Plugin_Spectrum = [
                 "Empty"
-                "Plugin_F0Marking"
-                "Plugin_F0Marking_ByPhase"
+                "Plugin_F0Marking_YIN"
+        #       "Plugin_F0Marking"
+        #       "Plugin_F0Marking_ByPhase"
         #       "Plugin_FormantFitting"
         #       "Plugin_Freq2Pitch"
                 "Plugin_HarmonicMarking"
